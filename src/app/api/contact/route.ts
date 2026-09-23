@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { CONTACT_EMAILS, WHATSAPP_NUMBER } from '@/types/contact'
+import { CONTACT_EMAILS, FIVERR_URL } from '@/types/contact'
 
 export async function POST(request: NextRequest) {
   try {
@@ -70,7 +70,7 @@ export async function POST(request: NextRequest) {
       budget: String(budget).trim(),
       message: message.trim(),
       recipients: CONTACT_EMAILS,
-      whatsapp: WHATSAPP_NUMBER,
+      fiverr: FIVERR_URL,
       timestamp: new Date().toISOString(),
     }
 
@@ -85,7 +85,7 @@ export async function POST(request: NextRequest) {
     console.log('Budget:', cleanPayload.budget)
     console.log('Message:', cleanPayload.message)
     console.log('Recipients:', cleanPayload.recipients)
-    console.log('WhatsApp Alert:', cleanPayload.whatsapp)
+    console.log('Fiverr Link:', cleanPayload.fiverr)
     console.log('=============================================')
 
     // Optional: If Resend or Web3Forms key is configured in process.env, forward email
@@ -117,7 +117,7 @@ export async function POST(request: NextRequest) {
           "Thank you. Your message has been received. We'll get back to you as soon as possible.",
         data: {
           routedTo: cleanPayload.recipients,
-          whatsappAlert: cleanPayload.whatsapp,
+          fiverrUrl: cleanPayload.fiverr,
           status: providerDispatched ? 'Dispatched to inbox' : 'Logged and queued for immediate review',
         },
       },
@@ -128,7 +128,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       {
         success: false,
-        error: 'An unexpected error occurred while processing your request. Please try again or message us on WhatsApp.',
+        error: 'An unexpected error occurred while processing your request. Please try again or reach out on Fiverr.',
       },
       { status: 500 }
     )

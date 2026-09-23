@@ -6,6 +6,7 @@ import { usePathname } from 'next/navigation'
 import { X, ArrowRight, Mail, Globe, Shield } from 'lucide-react'
 import Logo from './Logo'
 import Button from './Button'
+import { FIVERR_URL } from '@/types/contact'
 
 interface MobileMenuProps {
   isOpen: boolean
@@ -102,14 +103,14 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
           </Button>
 
           <a
-            href="https://wa.me/66961014547"
+            href={FIVERR_URL}
             target="_blank"
             rel="noopener noreferrer"
             onClick={onClose}
-            className="w-full py-3.5 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-sm flex items-center justify-center gap-2 shadow-lg shadow-emerald-600/30 transition-all"
+            className="w-full py-3.5 px-4 rounded-xl bg-[#1dbf73] hover:bg-[#19a463] text-white font-bold text-sm flex items-center justify-center gap-2 shadow-lg shadow-[#1dbf73]/30 transition-all"
           >
-            <span className="w-2 h-2 rounded-full bg-emerald-300 animate-pulse" />
-            <span>Chat on WhatsApp: +66 96 101 4547</span>
+            <span className="w-2 h-2 rounded-full bg-white animate-pulse" />
+            <span>Order on Fiverr (Verified Pro)</span>
           </a>
 
           <div className="space-y-2 text-xs text-slate-400 bg-slate-900/60 p-4 rounded-xl border border-slate-800/60">

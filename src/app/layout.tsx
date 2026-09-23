@@ -3,7 +3,7 @@ import type { Metadata, Viewport } from 'next'
 import './globals.css'
 import Header from '@/components/common/Header'
 import Footer from '@/components/common/Footer'
-import WhatsAppButton from '@/components/common/WhatsAppButton'
+import FiverrButton from '@/components/common/FiverrButton'
 
 export const viewport: Viewport = {
   themeColor: '#070B14',
@@ -136,7 +136,7 @@ export default function RootLayout({
         <main id="main-content" className="flex-1">
           {children}
         </main>
-        <WhatsAppButton />
+        <FiverrButton />
         <Footer />
       </body>
     </html>

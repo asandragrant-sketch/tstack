@@ -39,8 +39,7 @@ export const CONTACT_EMAILS = [
   'D.JACOBWEBPRO@GMAIL.COM'
 ]
 
-export const WHATSAPP_NUMBER = '+66 96 101 4547'
-export const WHATSAPP_RAW = '66961014547'
-export const WHATSAPP_LINK = 'https://wa.me/66961014547'
+export const FIVERR_URL = 'https://www.fiverr.com/s/bkdlzbX'
+export const FIVERR_LABEL = 'Hire Us on Fiverr'
 
 export const SERVICE_REGIONS = 'USA • UK • Spain • Selected Parts of Asia'

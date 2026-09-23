@@ -118,14 +118,14 @@ export default function FounderSpotlight() {
               </div>
               <span className="text-slate-700">|</span>
               <div className="flex items-center gap-2">
-                <span className="text-emerald-400 font-bold">WhatsApp:</span>
+                <span className="text-[#1dbf73] font-bold">Fiverr:</span>
                 <a
-                  href="https://wa.me/66961014547"
+                  href="https://www.fiverr.com/s/bkdlzbX"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-emerald-300 hover:text-emerald-200 font-bold transition-colors underline underline-offset-4"
+                  className="text-[#1dbf73] hover:text-emerald-200 font-bold transition-colors underline underline-offset-4"
                 >
-                  +66 96 101 4547
+                  Order on Fiverr (Verified Pro)
                 </a>
               </div>
             </div>

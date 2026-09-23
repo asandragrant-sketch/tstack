@@ -2,7 +2,7 @@ import React, { Suspense } from 'react'
 import type { Metadata } from 'next'
 import ContactForm from '@/components/contact/ContactForm'
 import { Mail, Globe2, Clock, ShieldCheck, Sparkles, CheckCircle2, MessageSquare } from 'lucide-react'
-import { CONTACT_EMAILS, SERVICE_REGIONS, WHATSAPP_NUMBER, WHATSAPP_RAW } from '@/types/contact'
+import { CONTACT_EMAILS, SERVICE_REGIONS, FIVERR_URL } from '@/types/contact'
 
 export const metadata: Metadata = {
   title: 'Contact TSTACK WEB | Start Your Digital Project',
@@ -66,29 +66,29 @@ export default function ContactPage() {
                   Official Communication Channels:
                 </div>
 
-                {/* Direct WhatsApp Action */}
+                {/* Direct Fiverr Action */}
                 <a
-                  href={`https://wa.me/${WHATSAPP_RAW}?text=${encodeURIComponent("Hi Daniel, I'm contacting TSTACK WEB regarding a project.")}`}
+                  href={FIVERR_URL}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="p-4 rounded-2xl bg-emerald-950/40 border border-emerald-500/50 hover:border-emerald-400 hover:bg-emerald-950/60 flex items-center justify-between transition-all group shadow-lg shadow-emerald-950/40"
+                  className="p-4 rounded-2xl bg-[#1dbf73]/10 border border-[#1dbf73]/50 hover:border-[#1dbf73] hover:bg-[#1dbf73]/20 flex items-center justify-between transition-all group shadow-lg shadow-[#1dbf73]/10"
                 >
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-emerald-400 group-hover:scale-110 transition-transform">
-                      <MessageSquare className="w-5 h-5" />
+                    <div className="w-10 h-10 rounded-xl bg-[#1dbf73]/20 border border-[#1dbf73]/40 flex items-center justify-center text-[#1dbf73] font-black text-lg group-hover:scale-110 transition-transform select-none">
+                      fi.
                     </div>
                     <div>
-                      <div className="text-[10px] font-mono uppercase text-emerald-400 font-bold flex items-center gap-1.5">
-                        <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                        Direct WhatsApp Support
+                      <div className="text-[10px] font-mono uppercase text-[#1dbf73] font-bold flex items-center gap-1.5">
+                        <span className="w-2 h-2 rounded-full bg-[#1dbf73] animate-pulse" />
+                        Official Fiverr Marketplace
                       </div>
-                      <div className="text-xs sm:text-sm font-mono font-bold text-white group-hover:text-emerald-300 transition-colors">
-                        {WHATSAPP_NUMBER}
+                      <div className="text-xs sm:text-sm font-semibold text-white group-hover:text-emerald-300 transition-colors">
+                        Order on Fiverr (Escrow &amp; Buyer Protected)
                       </div>
                     </div>
                   </div>
-                  <span className="text-[11px] font-mono font-bold text-emerald-400 group-hover:translate-x-1 transition-transform">
-                    Chat Now →
+                  <span className="text-[11px] font-mono font-bold text-[#1dbf73] group-hover:translate-x-1 transition-transform">
+                    View Gigs →
                   </span>
                 </a>
 

@@ -2,6 +2,7 @@ import React from 'react'
 import Link from 'next/link'
 import { Mail, Globe, ArrowUpRight, ShieldCheck, Zap, Code2 } from 'lucide-react'
 import Logo from './Logo'
+import { FIVERR_URL } from '@/types/contact'
 
 export default function Footer() {
   const currentYear = 2026
@@ -35,13 +36,13 @@ export default function Footer() {
               </div>
               <div className="space-y-1.5">
                 <a
-                  href="https://wa.me/66961014547"
+                  href={FIVERR_URL}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-2 text-xs sm:text-sm text-emerald-400 hover:text-emerald-300 transition-colors group font-mono font-medium"
+                  className="flex items-center gap-2 text-xs sm:text-sm text-[#1dbf73] hover:text-emerald-300 transition-colors group font-mono font-medium"
                 >
-                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                  <span>WhatsApp: +66 96 101 4547</span>
+                  <span className="w-2 h-2 rounded-full bg-[#1dbf73] animate-pulse" />
+                  <span>Order on Fiverr (Escrow Protected)</span>
                 </a>
                 <a
                   href="mailto:B.ELOWENWEBPRO@GMAIL.COM"

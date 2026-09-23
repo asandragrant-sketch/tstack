@@ -7,6 +7,7 @@ import { Menu, Sparkles } from 'lucide-react'
 import Logo from './Logo'
 import Button from './Button'
 import MobileMenu from './MobileMenu'
+import { FIVERR_URL } from '@/types/contact'
 
 const NAV_ITEMS = [
   { label: 'Home', href: '/' },
@@ -73,14 +74,14 @@ export default function Header() {
             {/* Header Right Actions */}
             <div className="hidden lg:flex items-center gap-3">
               <a
-                href="https://wa.me/66961014547"
+                href={FIVERR_URL}
                 target="_blank"
                 rel="noopener noreferrer"
-                aria-label="Chat on WhatsApp (+66 96 101 4547)"
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 hover:bg-emerald-500/25 hover:text-emerald-300 text-xs font-mono font-bold transition-colors"
+                aria-label="Order on Fiverr"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#1dbf73]/15 border border-[#1dbf73]/30 text-[#1dbf73] hover:bg-[#1dbf73]/25 hover:text-white text-xs font-mono font-bold transition-all"
               >
-                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                <span>+66 96 101 4547</span>
+                <span className="w-2 h-2 rounded-full bg-[#1dbf73] animate-pulse" />
+                <span>Hire on Fiverr</span>
               </a>
 
               <Button
@@ -97,13 +98,13 @@ export default function Header() {
             {/* Mobile Header Actions */}
             <div className="flex md:hidden items-center gap-2">
               <a
-                href="https://wa.me/66961014547"
+                href={FIVERR_URL}
                 target="_blank"
                 rel="noopener noreferrer"
-                aria-label="Chat on WhatsApp (+66 96 101 4547)"
-                className="text-xs font-bold px-2.5 py-1.5 rounded-lg bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 hover:bg-emerald-500/30 transition-colors flex items-center gap-1"
+                aria-label="Order on Fiverr"
+                className="text-xs font-bold px-2.5 py-1.5 rounded-lg bg-[#1dbf73]/20 text-[#1dbf73] border border-[#1dbf73]/40 hover:bg-[#1dbf73]/30 transition-colors flex items-center gap-1"
               >
-                <span>WA</span>
+                <span>Fiverr</span>
               </a>
               <Link
                 href="/contact"

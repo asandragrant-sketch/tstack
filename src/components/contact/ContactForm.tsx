@@ -7,11 +7,10 @@ import {
   SERVICE_OPTIONS,
   BUDGET_OPTIONS,
   ContactFormData,
-  WHATSAPP_NUMBER,
-  WHATSAPP_RAW,
+  FIVERR_URL,
   CONTACT_EMAILS
 } from '@/types/contact'
-import { CheckCircle2, AlertCircle, Send, MessageSquare, Mail } from 'lucide-react'
+import { CheckCircle2, AlertCircle, Send, Mail } from 'lucide-react'
 
 export default function ContactForm() {
   const searchParams = useSearchParams()
@@ -73,32 +72,6 @@ export default function ContactForm() {
     }
   }
 
-  const formatWhatsAppText = (data: ContactFormData) => {
-    const lines = [
-      '🚀 *NEW TSTACK WEB PROJECT INQUIRY*',
-      '--------------------------------',
-      `*Name:* ${data.fullName || 'Not specified'}`,
-      `*Email:* ${data.email || 'Not specified'}`,
-      `*Phone:* ${data.phone || 'Not provided'}`,
-      `*Company:* ${data.company || 'Not provided'}`,
-      `*Service Needed:* ${data.service}`,
-      `*Budget Range:* ${data.budget}`,
-      '--------------------------------',
-      `*Project Details:*`,
-      data.message || 'No additional details.',
-    ]
-    return encodeURIComponent(lines.join('\n'))
-  }
-
-  const handleSendWhatsApp = (e: React.MouseEvent) => {
-    e.preventDefault()
-    if (!formData.fullName.trim() || !formData.email.trim() || !formData.message.trim()) {
-      if (!validate()) return
-    }
-    const text = formatWhatsAppText(formData)
-    window.open(`https://wa.me/${WHATSAPP_RAW}?text=${text}`, '_blank')
-  }
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
@@ -139,7 +112,7 @@ export default function ContactForm() {
       }
     } catch (err) {
       setStatus('error')
-      setErrorMessage('Network connection failure. Please check your connection or contact us directly via WhatsApp.')
+      setErrorMessage('Network connection failure. Please check your connection or order directly via Fiverr.')
     }
   }
 
@@ -177,26 +150,24 @@ export default function ContactForm() {
             </p>
           </div>
 
-          {/* Instant WhatsApp Direct Forwarding for 100% Guaranteed Receipt */}
-          {lastSubmitted && (
-            <div className="p-5 rounded-2xl bg-emerald-950/30 border border-emerald-500/30 text-left space-y-3">
-              <div className="flex items-center gap-2 text-emerald-400 text-xs font-mono font-bold uppercase tracking-wider">
-                <MessageSquare className="w-4 h-4" />
-                <span>Instant Mobile Dispatch to Daniel Jacob:</span>
-              </div>
-              <p className="text-xs text-slate-300">
-                Want immediate confirmation right now? Send a pre-filled direct copy to WhatsApp:
-              </p>
-              <a
-                href={`https://wa.me/${WHATSAPP_RAW}?text=${formatWhatsAppText(lastSubmitted)}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center justify-center gap-2 w-full py-3 px-4 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-white font-bold text-sm transition-all shadow-lg shadow-emerald-500/20"
-              >
-                <span>Chat Instantly on WhatsApp ({WHATSAPP_NUMBER})</span>
-              </a>
+          {/* Order Directly via Fiverr with Buyer Protection */}
+          <div className="p-5 rounded-2xl bg-[#1dbf73]/10 border border-[#1dbf73]/30 text-left space-y-3">
+            <div className="flex items-center gap-2 text-[#1dbf73] text-xs font-mono font-bold uppercase tracking-wider">
+              <span className="w-2 h-2 rounded-full bg-[#1dbf73] animate-pulse" />
+              <span>Prefer Escrow &amp; Milestone Protection?</span>
             </div>
-          )}
+            <p className="text-xs text-slate-300 leading-relaxed">
+              You can also initiate your contract and collaborate securely through our verified Fiverr profile:
+            </p>
+            <a
+              href={FIVERR_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center justify-center gap-2 w-full py-3 px-4 rounded-xl bg-[#1dbf73] hover:bg-[#19a463] text-white font-bold text-sm transition-all shadow-lg shadow-[#1dbf73]/20"
+            >
+              <span>Order Directly on Fiverr (Verified Pro) →</span>
+            </a>
+          </div>
 
           <div className="pt-2">
             <Button
@@ -219,14 +190,14 @@ export default function ContactForm() {
               <div>
                 <span>{errorMessage}</span>
                 <div className="mt-2 text-xs">
-                  <span>You can also contact us directly on WhatsApp: </span>
+                  <span>You can also order directly via our Fiverr profile: </span>
                   <a
-                    href={`https://wa.me/${WHATSAPP_RAW}`}
+                    href={FIVERR_URL}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-emerald-400 font-bold underline ml-1"
+                    className="text-[#1dbf73] font-bold underline ml-1"
                   >
-                    {WHATSAPP_NUMBER}
+                    View Fiverr Profile →
                   </a>
                 </div>
               </div>
@@ -410,19 +381,19 @@ export default function ContactForm() {
               Submit Project Inquiry
             </Button>
 
-            {/* Direct WhatsApp Submission Button */}
-            <button
-              type="button"
-              onClick={handleSendWhatsApp}
-              className="w-full py-3.5 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-sm tracking-wide transition-all duration-300 flex items-center justify-center gap-2 shadow-lg shadow-emerald-600/25 hover:shadow-emerald-500/40 hover:-translate-y-0.5 active:translate-y-0 focus:outline-none focus:ring-2 focus:ring-emerald-400"
+            {/* Direct Fiverr Order Button */}
+            <a
+              href={FIVERR_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-full py-3.5 px-4 rounded-xl bg-[#1dbf73] hover:bg-[#19a463] text-white font-bold text-sm tracking-wide transition-all duration-300 flex items-center justify-center gap-2 shadow-lg shadow-[#1dbf73]/25 hover:shadow-[#1dbf73]/40 hover:-translate-y-0.5 active:translate-y-0 focus:outline-none focus:ring-2 focus:ring-[#1dbf73]"
             >
-              <MessageSquare className="w-4 h-4" />
-              <span>Or Send Directly via WhatsApp ({WHATSAPP_NUMBER})</span>
-            </button>
+              <span>Prefer Fiverr? Order Directly on Fiverr</span>
+            </a>
           </div>
 
           <div className="pt-3 border-t border-slate-800/80 text-center text-[11px] text-slate-400 font-mono flex items-center justify-center gap-2">
-            <span>Direct to Daniel Jacob ({WHATSAPP_NUMBER})</span>
+            <span>Daniel Jacob • TSTACK WEB</span>
             <span>•</span>
             <span>100% Confidential</span>
           </div>
