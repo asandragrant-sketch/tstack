@@ -1,0 +1,21 @@
+<svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="faviconGrad" x1="4" y1="4" x2="44" y2="44" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stopColor="#38BDF8" />
+      <stop offset="50%" stopColor="#2563EB" />
+      <stop offset="100%" stopColor="#1D4ED8" />
+    </linearGradient>
+    <linearGradient id="faviconAccent" x1="12" y1="8" x2="36" y2="40" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stopColor="#06B6D4" />
+      <stop offset="100%" stopColor="#8B5CF6" />
+    </linearGradient>
+  </defs>
+  <rect width="48" height="48" rx="12" fill="#070B14" />
+  <rect x="1" y="1" width="46" height="46" rx="11" stroke="#2563EB" stroke-opacity="0.3" />
+  <path d="M7 11C7 8.23858 9.23858 6 12 6H36C38.7614 6 41 8.23858 41 11C41 13.7614 38.7614 16 36 16H12C9.23858 16 7 13.7614 7 11Z" fill="url(#faviconGrad)" />
+  <rect x="18" y="19" width="12" height="9" rx="3" fill="url(#faviconAccent)" />
+  <path d="M19 31C19 29.8954 19.8954 29 21 29H27C28.1046 29 29 29.8954 29 31V37C29 39.7614 26.7614 42 24 42C21.2386 42 19 39.7614 19 37V31Z" fill="url(#faviconGrad)" />
+  <path d="M11 23L6.5 27.5L11 32" stroke="#38BDF8" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+  <path d="M37 23L41.5 27.5L37 32" stroke="#06B6D4" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+  <circle cx="24" cy="23.5" r="1.75" fill="#FFFFFF" />
+</svg>
