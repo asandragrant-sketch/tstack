@@ -92,13 +92,25 @@ export default function RootLayout({
       {
         '@type': 'ContactPoint',
         email: 'B.ELOWENWEBPRO@GMAIL.COM',
-        contactType: 'customer service',
+        contactType: 'executive office',
         availableLanguage: ['English', 'Spanish'],
       },
       {
         '@type': 'ContactPoint',
         email: 'D.JACOBWEBPRO@GMAIL.COM',
-        contactType: 'technical support',
+        contactType: 'lead architect',
+        availableLanguage: ['English', 'Spanish'],
+      },
+      {
+        '@type': 'ContactPoint',
+        email: 'DAVIDALISONWEBPRO@GMAIL.COM',
+        contactType: 'technical solutions',
+        availableLanguage: ['English', 'Spanish'],
+      },
+      {
+        '@type': 'ContactPoint',
+        email: 'BARONWEBPRO@GMAIL.COM',
+        contactType: 'project management',
         availableLanguage: ['English', 'Spanish'],
       },
     ],

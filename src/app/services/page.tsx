@@ -21,6 +21,7 @@ import {
   Layers
 } from 'lucide-react'
 import { SERVICES_DATA } from '@/types/services'
+import { CONTACT_EMAILS } from '@/types/contact'
 
 export const metadata: Metadata = {
   title: 'TSTACK WEB Services | Web Design, Development & Digital Solutions',
@@ -218,15 +219,16 @@ export default function ServicesPage() {
             LET&apos;S TALK
           </Button>
 
-          <div className="mt-10 flex flex-wrap items-center justify-center gap-6 text-xs font-mono text-slate-400">
-            <span>Direct Inquiries:</span>
-            <a href="mailto:B.ELOWENWEBPRO@GMAIL.COM" className="hover:text-cyan-300 transition-colors">
-              B.ELOWENWEBPRO@GMAIL.COM
-            </a>
-            <span>•</span>
-            <a href="mailto:D.JACOBWEBPRO@GMAIL.COM" className="hover:text-cyan-300 transition-colors">
-              D.JACOBWEBPRO@GMAIL.COM
-            </a>
+          <div className="mt-10 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-xs font-mono text-slate-400">
+            <span className="text-slate-300 font-semibold">Direct Inquiries:</span>
+            {CONTACT_EMAILS.map((email, idx) => (
+              <React.Fragment key={email}>
+                {idx > 0 && <span className="text-slate-600 hidden sm:inline">•</span>}
+                <a href={`mailto:${email}`} className="hover:text-cyan-300 transition-colors">
+                  {email}
+                </a>
+              </React.Fragment>
+            ))}
           </div>
         </div>
       </section>

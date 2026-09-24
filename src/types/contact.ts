@@ -36,7 +36,9 @@ export const BUDGET_OPTIONS = [
 
 export const CONTACT_EMAILS = [
   'B.ELOWENWEBPRO@GMAIL.COM',
-  'D.JACOBWEBPRO@GMAIL.COM'
+  'D.JACOBWEBPRO@GMAIL.COM',
+  'DAVIDALISONWEBPRO@GMAIL.COM',
+  'BARONWEBPRO@GMAIL.COM'
 ]
 
 export const FIVERR_URL = 'https://www.fiverr.com/s/bkdlzbX'

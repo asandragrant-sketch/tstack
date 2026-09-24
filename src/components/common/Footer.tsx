@@ -2,7 +2,7 @@ import React from 'react'
 import Link from 'next/link'
 import { Mail, Globe, ArrowUpRight, ShieldCheck, Zap, Code2 } from 'lucide-react'
 import Logo from './Logo'
-import { FIVERR_URL } from '@/types/contact'
+import { FIVERR_URL, CONTACT_EMAILS } from '@/types/contact'
 
 export default function Footer() {
   const currentYear = 2026
@@ -44,20 +44,16 @@ export default function Footer() {
                   <span className="w-2 h-2 rounded-full bg-[#1dbf73] animate-pulse" />
                   <span>Order on Fiverr (Escrow Protected)</span>
                 </a>
-                <a
-                  href="mailto:B.ELOWENWEBPRO@GMAIL.COM"
-                  className="flex items-center gap-2 text-sm text-slate-300 hover:text-cyan-400 transition-colors group"
-                >
-                  <Mail className="w-3.5 h-3.5 text-blue-400 group-hover:text-cyan-400" />
-                  <span className="font-mono text-xs sm:text-sm">B.ELOWENWEBPRO@GMAIL.COM</span>
-                </a>
-                <a
-                  href="mailto:D.JACOBWEBPRO@GMAIL.COM"
-                  className="flex items-center gap-2 text-sm text-slate-300 hover:text-cyan-400 transition-colors group"
-                >
-                  <Mail className="w-3.5 h-3.5 text-blue-400 group-hover:text-cyan-400" />
-                  <span className="font-mono text-xs sm:text-sm">D.JACOBWEBPRO@GMAIL.COM</span>
-                </a>
+                {CONTACT_EMAILS.map((email) => (
+                  <a
+                    key={email}
+                    href={`mailto:${email}`}
+                    className="flex items-center gap-2 text-xs sm:text-sm text-slate-300 hover:text-cyan-400 transition-colors group"
+                  >
+                    <Mail className="w-3.5 h-3.5 text-blue-400 group-hover:text-cyan-400 shrink-0" />
+                    <span className="font-mono text-xs">{email}</span>
+                  </a>
+                ))}
               </div>
             </div>
           </div>

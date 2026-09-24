@@ -18,7 +18,7 @@ Serving clients across the **USA • UK • Spain • Selected Parts of Asia**.
   - **Our Services (`/services`)**: In-depth breakdown of all 12 services with capability checklists and standard deliverables, ending with the *"HAVE A PROJECT IN MIND? LET'S TALK"* consultation banner.
   - **Contact Us (`/contact`)**: Multi-channel communications with verified emails, Fiverr direct profile link, and a production-ready contact form.
 - **Direct Fiverr Integration**: Floating widget, verified pro delivery badge, and instant escrow-protected contract access via **`https://www.fiverr.com/s/bkdlzbX`**.
-- **Real Functional Contact Form**: Server-side API route (`/api/contact`) with validation, anti-spam honeypot, and fail-safe multi-channel routing to `B.ELOWENWEBPRO@GMAIL.COM` and `D.JACOBWEBPRO@GMAIL.COM`.
+- **Real Functional Contact Form**: Server-side API route (`/api/contact`) with validation, anti-spam honeypot, and fail-safe routing to verified TSTACK channels (`B.ELOWENWEBPRO@GMAIL.COM`, `D.JACOBWEBPRO@GMAIL.COM`, `DAVIDALISONWEBPRO@GMAIL.COM`, `BARONWEBPRO@GMAIL.COM`).
 - **SEO & Accessibility**: Complete Open Graph social tags, canonical URLs, JSON-LD Schema (Organization & WebSite), `sitemap.xml`, `robots.txt`, custom 404 page, and `prefers-reduced-motion` compliance.
 
 ---
@@ -68,6 +68,8 @@ npm run start
 - **Order on Fiverr (Verified Pro)**: [https://www.fiverr.com/s/bkdlzbX](https://www.fiverr.com/s/bkdlzbX)
 - **Official Inquiries**: [D.JACOBWEBPRO@GMAIL.COM](mailto:D.JACOBWEBPRO@GMAIL.COM)
 - **Executive Office**: [B.ELOWENWEBPRO@GMAIL.COM](mailto:B.ELOWENWEBPRO@GMAIL.COM)
+- **Technical Solutions**: [DAVIDALISONWEBPRO@GMAIL.COM](mailto:DAVIDALISONWEBPRO@GMAIL.COM)
+- **Project Management**: [BARONWEBPRO@GMAIL.COM](mailto:BARONWEBPRO@GMAIL.COM)
 - **Service Territories**: USA • UK • Spain • Selected Parts of Asia
 
 ---
