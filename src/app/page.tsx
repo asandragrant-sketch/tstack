@@ -1,28 +1,25 @@
 import React from 'react'
 import type { Metadata } from 'next'
-import HeroSlider from '@/components/hero/HeroSlider'
-import Introduction from '@/components/home/Introduction'
-import ServicesGrid from '@/components/home/ServicesGrid'
+import Hero from '@/components/home/Hero'
+import TrustBar from '@/components/home/TrustBar'
+import FeaturedServices from '@/components/home/FeaturedServices'
+import FeaturedWork from '@/components/home/FeaturedWork'
 import WhyTStack from '@/components/home/WhyTStack'
-import ProcessTimeline from '@/components/home/ProcessTimeline'
-import SelectedConcepts from '@/components/home/SelectedConcepts'
-import TechStack from '@/components/home/TechStack'
-import GlobalPresence from '@/components/home/GlobalPresence'
 import HomeCTA from '@/components/home/HomeCTA'
 
 export const metadata: Metadata = {
-  title: 'TSTACK WEB | Modern Web Development & Digital Solutions',
+  title: 'TSTACK | AI Automation, Autonomous Agents & Business Software',
   description:
-    'Full-service web development and digital solutions agency. Distinctive websites, custom software, and scalable digital experiences serving the USA, UK, Spain, and Asia.',
+    'TSTACK engineers practical AI automation pipelines, custom autonomous agents, and high-performance web applications for modern businesses.',
   alternates: {
     canonical: 'https://tstackweb.com',
   },
   openGraph: {
-    title: 'TSTACK WEB | Modern Web Development & Digital Solutions',
+    title: 'TSTACK | AI Automation, Autonomous Agents & Business Software',
     description:
-      'Full-service web development and digital solutions agency. Distinctive websites, custom software, and scalable digital experiences.',
+      'We design and build dependable automated workflows, autonomous assistants, and full-stack software that eliminate repetitive operations and help businesses scale.',
     url: 'https://tstackweb.com',
-    siteName: 'TSTACK WEB',
+    siteName: 'TSTACK',
     type: 'website',
   },
 }
@@ -30,14 +27,11 @@ export const metadata: Metadata = {
 export default function HomePage() {
   return (
     <>
-      <HeroSlider />
-      <Introduction />
-      <ServicesGrid />
+      <Hero />
+      <TrustBar />
+      <FeaturedServices />
+      <FeaturedWork />
       <WhyTStack />
-      <ProcessTimeline />
-      <SelectedConcepts />
-      <TechStack />
-      <GlobalPresence />
       <HomeCTA />
     </>
   )

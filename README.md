@@ -1,49 +1,45 @@
-# TSTACK WEB — Modern Web Development & Digital Solutions
+# TSTACK — AI Automation, Autonomous Agents & Business Software
 
-![TSTACK WEB](public/images/founder-daniel-jacob.jpg)
+![TSTACK](public/images/founder-daniel-jacob.jpg)
 
-**TSTACK WEB** is an international full-service web development and digital solutions agency engineered for modern businesses, startups, entrepreneurs, and e-commerce brands. 
+**TSTACK** is a technology solutions agency engineering dependable AI workflow automation, custom autonomous agents, and high-performance digital platforms for modern businesses.
 
 Serving clients across the **USA • UK • Spain • Selected Parts of Asia**.
 
 ---
 
-## ⚡ Key Highlights
+## ⚡ Core Philosophy & Architecture
 
-- **Slider Revolution-Inspired Hero Presentation**: 4 multi-layered animated slides with staggered entrance timing, linear progress autoplay bar, slide numerical selectors, keyboard controls, and interactive desktop cursor parallax.
-- **Bespoke Technology Identity**: Custom geometric technology symbol representing code syntax, modular architectural tiers, and data node interconnection.
-- **Four Production Pages**:
-  - **Home (`/`)**: Hero Slider, Introduction (*"DESIGN. DEVELOPMENT. TECHNOLOGY. GROWTH."*), 12 Service Modules, Why TSTACK WEB (6 core pillars), 5-Phase Process Timeline, Selected Concepts, Tech Capabilities, and Global Presence.
-  - **About Us (`/about`)**: Hero (*"WE TURN DIGITAL IDEAS INTO REAL-WORLD RESULTS."*), **Founder Spotlight for Daniel Jacob** featuring official portrait photography, Mission & Vision, and the 6 Core Values (*Innovation, Quality, Transparency, Performance, Collaboration, Long-Term Thinking*).
-  - **Our Services (`/services`)**: In-depth breakdown of all 12 services with capability checklists and standard deliverables, ending with the *"HAVE A PROJECT IN MIND? LET'S TALK"* consultation banner.
-  - **Contact Us (`/contact`)**: Multi-channel communications with verified emails, Fiverr direct profile link, and a production-ready contact form.
-- **Direct Fiverr Integration**: Floating widget, verified pro delivery badge, and instant escrow-protected contract access via **`https://www.fiverr.com/s/bkdlzbX`**.
-- **Real Functional Contact Form**: Server-side API route (`/api/contact`) with validation, anti-spam honeypot, and fail-safe routing to verified TSTACK channels (`B.ELOWENWEBPRO@GMAIL.COM`, `D.JACOBWEBPRO@GMAIL.COM`, `DAVIDALISONWEBPRO@GMAIL.COM`, `BARONWEBPRO@GMAIL.COM`).
-- **SEO & Accessibility**: Complete Open Graph social tags, canonical URLs, JSON-LD Schema (Organization & WebSite), `sitemap.xml`, `robots.txt`, custom 404 page, and `prefers-reduced-motion` compliance.
+- **Clean, Human & Restrained Aesthetic**: Designed with Apple-level minimalism, subtle typography, and zero distracting neon or generic AI-template effects.
+- **3 Focused Homepage Services**:
+  1. **AI Automation & Workflows**: Connect fragmented tools, sync CRMs, and eliminate repetitive manual data entry.
+  2. **AI Agents & Assistants**: Custom-trained autonomous agents for customer support, lead qualification, and internal RAG search.
+  3. **Web & Business Solutions**: Production-grade Next.js web applications, client management portals, and modern business websites.
+- **Full Capabilities Directory (`/services`)**: In-depth breakdown organized into 4 categorized engineering areas with direct quote and Fiverr order triggers.
+- **Leadership & Engineering Team (`/about`)**: Featuring Founder & Lead Solutions Architect **Daniel Jacob**, alongside key engineering partners **David Alison** and **Baron**.
+- **Direct Fiverr Integration**: Official order actions linking directly to verified pro profile **`https://www.fiverr.com/s/bkdlzbX`** with 100% milestone escrow protection.
+- **Verified Communication Channels**: Server-side API route (`/api/contact`) with validation, anti-spam honeypot, and multi-channel routing to `davidalisonwebpro@gmail.com`, `baronwebpro@gmail.com`, `b.elowenwebpro@gmail.com`, and `d.jacobwebpro@gmail.com`.
+- **Zero WhatsApp**: WhatsApp has been completely removed across the platform in favor of secure Fiverr escrow and direct verified email channels.
 
 ---
 
 ## 🛠️ Technology Stack
 
-- **Framework**: [Next.js 14](https://nextjs.org/) (App Router, SSR, Static Generation)
+- **Framework**: [Next.js 14](https://nextjs.org/) (App Router, Server-Side Rendering)
 - **UI Library**: [React 18](https://react.dev/)
 - **Language**: [TypeScript](https://www.typescriptlang.org/) (Strict Type Checking)
-- **Styling**: [Tailwind CSS](https://tailwindcss.com/) with custom design tokens
+- **Styling**: [Tailwind CSS](https://tailwindcss.com/) with restrained design tokens
 - **Icons**: [Lucide React](https://lucide.dev/)
 
 ---
 
 ## 🚀 Getting Started
 
-### Prerequisites
-- Node.js 18.17+ or 20+
-- npm, yarn, or pnpm
-
-### Installation
+### Local Development
 ```bash
 # Clone the repository
-git clone https://github.com/asandragrant-sketch/TSTACK.git
-cd TSTACK
+git clone https://github.com/asandragrant-sketch/tstack.git
+cd tstack
 
 # Install dependencies
 npm install
@@ -64,16 +60,15 @@ npm run start
 
 ## 📬 Direct Communications
 
-- **Founder & Lead Solutions Architect**: Daniel Jacob
 - **Order on Fiverr (Verified Pro)**: [https://www.fiverr.com/s/bkdlzbX](https://www.fiverr.com/s/bkdlzbX)
-- **Official Inquiries**: [D.JACOBWEBPRO@GMAIL.COM](mailto:D.JACOBWEBPRO@GMAIL.COM)
-- **Executive Office**: [B.ELOWENWEBPRO@GMAIL.COM](mailto:B.ELOWENWEBPRO@GMAIL.COM)
-- **Technical Solutions**: [DAVIDALISONWEBPRO@GMAIL.COM](mailto:DAVIDALISONWEBPRO@GMAIL.COM)
-- **Project Management**: [BARONWEBPRO@GMAIL.COM](mailto:BARONWEBPRO@GMAIL.COM)
+- **Technical Solutions & AI Architecture**: [davidalisonwebpro@gmail.com](mailto:davidalisonwebpro@gmail.com)
+- **Project Delivery & Management**: [baronwebpro@gmail.com](mailto:baronwebpro@gmail.com)
+- **Lead Solutions Architect**: [d.jacobwebpro@gmail.com](mailto:d.jacobwebpro@gmail.com)
+- **Executive Office**: [b.elowenwebpro@gmail.com](mailto:b.elowenwebpro@gmail.com)
 - **Service Territories**: USA • UK • Spain • Selected Parts of Asia
 
 ---
 
 ## 📄 License
 
-© 2026 TSTACK WEB. All rights reserved.
+© 2026 TSTACK. All rights reserved.

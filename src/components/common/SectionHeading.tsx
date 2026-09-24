@@ -21,7 +21,7 @@ export default function SectionHeading({
   return (
     <div
       className={cn(
-        'max-w-3xl mb-12 sm:mb-16',
+        'max-w-2xl mb-12 sm:mb-16',
         align === 'center' ? 'mx-auto text-center' : 'text-left',
         className
       )}
@@ -29,24 +29,23 @@ export default function SectionHeading({
       {badge && (
         <div
           className={cn(
-            'inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider mb-4 border border-blue-500/30 bg-blue-950/40 text-blue-400 backdrop-blur-sm',
+            'inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-mono font-medium text-slate-400 bg-slate-900 border border-slate-800 mb-4',
             align === 'center' && 'justify-center'
           )}
         >
-          <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-ping" />
           <span>{badge}</span>
         </div>
       )}
 
-      <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-white font-display leading-[1.15]">
+      <h2 className="text-2xl sm:text-3xl lg:text-4xl font-semibold tracking-tight text-white leading-tight">
         {title}{' '}
         {highlight && (
-          <span className="gradient-text-cyan">{highlight}</span>
+          <span className="text-slate-300 font-medium">{highlight}</span>
         )}
       </h2>
 
       {description && (
-        <p className="mt-4 text-base sm:text-lg text-slate-400 leading-relaxed max-w-2xl mx-auto">
+        <p className="mt-3.5 text-sm sm:text-base text-slate-400 leading-relaxed max-w-xl mx-auto">
           {description}
         </p>
       )}

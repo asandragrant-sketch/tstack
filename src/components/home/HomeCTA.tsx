@@ -1,56 +1,62 @@
 import React from 'react'
-import Button from '@/components/common/Button'
-import { Sparkles, Mail, Globe, ArrowRight } from 'lucide-react'
+import Link from 'next/link'
+import { ArrowUpRight, Mail } from 'lucide-react'
+import { FIVERR_URL } from '@/types/contact'
 
 export default function HomeCTA() {
   return (
-    <section className="relative py-24 sm:py-32 bg-slate-950 overflow-hidden">
-      {/* Dynamic Background Glow */}
-      <div className="absolute inset-0 bg-gradient-to-b from-blue-950/20 via-slate-950 to-slate-950 pointer-events-none" />
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[350px] bg-gradient-to-r from-blue-600/15 via-cyan-500/15 to-indigo-600/15 blur-[140px] rounded-full pointer-events-none" />
-
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-mono font-semibold uppercase tracking-wider bg-blue-950/80 border border-blue-500/40 text-cyan-300 mb-6 shadow-sm shadow-blue-900/50">
-          <Sparkles className="w-3.5 h-3.5 text-cyan-400" />
-          <span>START YOUR COLLABORATION</span>
+    <section className="py-20 sm:py-28 border-t border-slate-900 bg-slate-950/80">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 text-center">
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-mono font-medium text-slate-300 bg-slate-900 border border-slate-800 mb-6">
+          <span>PROJECT CONSULTATION</span>
         </div>
 
-        <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-white font-display tracking-tight leading-[1.15] mb-6">
-          READY TO BUILD YOUR NEXT{' '}
-          <span className="gradient-text-cyan">DIGITAL EXPERIENCE?</span>
+        <h2 className="text-2xl sm:text-4xl lg:text-5xl font-semibold tracking-tight text-white leading-tight mb-4">
+          Ready to automate your operations or build your next digital product?
         </h2>
 
-        <p className="text-base sm:text-xl text-slate-300 max-w-2xl mx-auto leading-relaxed mb-10">
-          Tell us what you&apos;re building and let&apos;s turn the idea into a digital experience designed around your goals.
+        <p className="text-sm sm:text-base text-slate-400 max-w-xl mx-auto leading-relaxed mb-8">
+          Get in touch to discuss your architecture, or initiate an order directly with milestone protection on Fiverr.
         </p>
 
-        <div className="flex flex-wrap items-center justify-center gap-4">
-          <Button
-            href="/contact"
-            variant="glow"
-            size="lg"
-            icon
-            className="font-bold tracking-wide shadow-blue-500/30 text-base px-8 py-4"
+        {/* Action Buttons */}
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-3.5 mb-10">
+          <a
+            href={FIVERR_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-lg bg-[#1dbf73] hover:bg-[#19a463] text-white text-sm font-medium transition-colors shadow-sm"
           >
-            Start Your Project
-          </Button>
+            <span>Order on Fiverr (Escrow Protected)</span>
+            <ArrowUpRight className="w-4 h-4" />
+          </a>
 
-          <Button
-            href="/services"
-            variant="secondary"
-            size="lg"
-            className="font-semibold text-base px-8 py-4"
+          <Link
+            href="/contact"
+            className="w-full sm:w-auto inline-flex items-center justify-center px-5 py-3 rounded-lg bg-slate-900 hover:bg-slate-850 text-slate-200 text-sm font-medium border border-slate-800 transition-colors"
           >
-            Explore Services
-          </Button>
+            Send a Project Inquiry
+          </Link>
         </div>
 
-        <div className="mt-12 pt-8 border-t border-slate-900 flex flex-wrap items-center justify-center gap-6 text-xs text-slate-500 font-mono">
-          <span>USA • UK • Spain • Selected Parts of Asia</span>
-          <span className="hidden sm:inline">•</span>
-          <span>Response within 24 business hours</span>
-          <span className="hidden sm:inline">•</span>
-          <span>Direct developer consultation</span>
+        {/* Verified Direct Emails */}
+        <div className="pt-8 border-t border-slate-900/80 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-xs font-mono text-slate-400">
+          <span className="text-slate-500 font-sans">Direct Inquiries:</span>
+          <a
+            href="mailto:davidalisonwebpro@gmail.com"
+            className="hover:text-slate-200 transition-colors inline-flex items-center gap-1.5"
+          >
+            <Mail className="w-3.5 h-3.5 text-slate-500" />
+            <span>davidalisonwebpro@gmail.com</span>
+          </a>
+          <span className="text-slate-700 hidden sm:inline">•</span>
+          <a
+            href="mailto:baronwebpro@gmail.com"
+            className="hover:text-slate-200 transition-colors inline-flex items-center gap-1.5"
+          >
+            <Mail className="w-3.5 h-3.5 text-slate-500" />
+            <span>baronwebpro@gmail.com</span>
+          </a>
         </div>
       </div>
     </section>

@@ -1,104 +1,66 @@
 import React from 'react'
+import { Target, ShieldCheck, Users, Lock } from 'lucide-react'
 import SectionHeading from '@/components/common/SectionHeading'
-import {
-  Cpu,
-  Smartphone,
-  Zap,
-  TrendingUp,
-  HeartHandshake,
-  LifeBuoy,
-  CheckCircle2
-} from 'lucide-react'
 
-const PILLARS = [
+const REASONS = [
   {
-    title: 'Modern Technology',
-    icon: Cpu,
+    icon: Target,
+    title: 'Business-First Engineering',
     description:
-      'We leverage contemporary, production-proven tools and development practices — including Next.js, React, and TypeScript — avoiding deprecated libraries and obsolete frameworks.',
-    points: ['Strict typing and clean architecture', 'Zero-legacy build pipelines', 'Continuous automated linting & tests'],
+      'We do not build tech for tech’s sake. Every automation pipeline and software module is scoped around clear operational ROI—reducing manual hours, preventing costly errors, or increasing conversion.',
   },
   {
-    title: 'Responsive Design',
-    icon: Smartphone,
+    icon: ShieldCheck,
+    title: 'Production-Grade Reliability',
     description:
-      'Every interface is meticulously engineered to adapt gracefully across mobile, tablet, laptop, and ultra-wide viewports without visual compromise or horizontal shifts.',
-    points: ['Custom mobile-first layouts', 'Touch-optimized interactions', 'Adaptive typography scales'],
+      'We write clean, strictly typed, and thoroughly tested code. Our automated systems feature proactive error-handling, webhook validation, and automated retries so you never lose critical customer data.',
   },
   {
-    title: 'Performance',
-    icon: Zap,
+    icon: Users,
+    title: 'Direct Technical Access',
     description:
-      'We treat speed as a foundational design feature. Fast-loading pages protect brand reputation, enhance SEO visibility, and drastically reduce user bounce rates.',
-    points: ['Server-side rendering & static generation', 'Aggressive media optimization', 'Sub-second critical render paths'],
+      'You communicate directly with senior technical architects (David Alison & Daniel Jacob). No junior hand-offs, no account-manager layers, and no miscommunicated project requirements.',
   },
   {
-    title: 'Scalability',
-    icon: TrendingUp,
+    icon: Lock,
+    title: 'Safe Milestone & Escrow Delivery',
     description:
-      'Our solutions are structured for long-term growth. As your organization expands its product line or traffic, our modular codebase adapts without requiring rewrites.',
-    points: ['Component-driven architecture', 'Modular database modeling', 'Stateless cloud edge readiness'],
-  },
-  {
-    title: 'User Experience',
-    icon: HeartHandshake,
-    description:
-      'We prioritize clarity, usability, and intuitive interaction hierarchy, ensuring that every user journey from landing to conversion is natural and frictionless.',
-    points: ['Logical information architecture', 'High-contrast readable typography', 'Accessible semantic patterns'],
-  },
-  {
-    title: 'Long-Term Support',
-    icon: LifeBuoy,
-    description:
-      'Launch is just the initial milestone. TSTACK WEB provides ongoing technical stewardship, proactive maintenance, dependency upgrades, and evolutionary improvements.',
-    points: ['Direct developer communication', 'Proactive security patching', 'Reliable turnaround commitments'],
+      'Every project can be contracted safely through our verified Fiverr profile. Your budget remains protected in escrow until you have reviewed, tested, and approved each project milestone.',
   },
 ]
 
 export default function WhyTStack() {
   return (
-    <section className="relative py-24 sm:py-32 bg-slate-950 overflow-hidden border-b border-slate-900">
-      {/* Background ambient lighting */}
-      <div className="absolute top-1/2 left-0 -translate-y-1/2 w-96 h-96 bg-blue-600/10 rounded-full blur-[140px] pointer-events-none" />
-      <div className="absolute bottom-0 right-0 w-96 h-96 bg-cyan-600/10 rounded-full blur-[140px] pointer-events-none" />
-
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+    <section className="py-20 sm:py-28 border-t border-slate-900">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6">
         <SectionHeading
-          badge="Engineering Foundations"
-          title="WHY PARTNER WITH"
-          highlight="TSTACK WEB"
-          description="We uphold rigorous engineering benchmarks and transparent delivery standards designed to give our clients a lasting digital advantage."
+          badge="Why TSTACK"
+          title="Direct engineering."
+          highlight="No agency fluff."
+          description="We take a transparent, engineering-driven approach to solving business problems."
         />
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {PILLARS.map((pillar, idx) => {
-            const Icon = pillar.icon
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
+          {REASONS.map((item, index) => {
+            const Icon = item.icon
             return (
               <div
-                key={pillar.title}
-                className="p-8 rounded-2xl glass-panel border border-slate-800/80 hover:border-cyan-500/40 hover:bg-slate-900/50 transition-all duration-300 flex flex-col justify-between group"
+                key={item.title}
+                className="pro-card p-6 sm:p-8 flex items-start gap-5"
               >
-                <div>
-                  <div className="w-12 h-12 rounded-xl bg-blue-950/80 border border-blue-500/30 flex items-center justify-center text-cyan-400 mb-6 group-hover:scale-110 group-hover:bg-blue-900/50 transition-all">
-                    <Icon className="w-6 h-6 text-cyan-400" />
-                  </div>
-
-                  <h3 className="text-xl font-bold text-white mb-3 font-display">
-                    {pillar.title}
-                  </h3>
-
-                  <p className="text-sm text-slate-400 leading-relaxed mb-6">
-                    {pillar.description}
-                  </p>
+                <div className="w-10 h-10 rounded-lg bg-slate-900 border border-slate-800 flex items-center justify-center text-blue-400 shrink-0 mt-1">
+                  <Icon className="w-5 h-5" />
                 </div>
-
-                <div className="pt-4 border-t border-slate-800/60 space-y-2">
-                  {pillar.points.map((point) => (
-                    <div key={point} className="flex items-center gap-2 text-xs text-slate-300">
-                      <CheckCircle2 className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
-                      <span>{point}</span>
-                    </div>
-                  ))}
+                <div>
+                  <div className="text-[11px] font-mono text-slate-500 mb-1">
+                    0{index + 1}. PRINCIPLE
+                  </div>
+                  <h3 className="text-base sm:text-lg font-semibold text-white mb-2">
+                    {item.title}
+                  </h3>
+                  <p className="text-xs sm:text-sm text-slate-400 leading-relaxed">
+                    {item.description}
+                  </p>
                 </div>
               </div>
             )

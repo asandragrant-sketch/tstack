@@ -10,18 +10,13 @@ export interface ContactFormData {
 }
 
 export const SERVICE_OPTIONS = [
-  'Website Design',
-  'Website Development',
-  'E-commerce Development',
-  'UI/UX Design',
-  'Web Applications',
-  'WordPress Development',
-  'SEO',
-  'Website Maintenance',
-  'Website Redesign',
+  'AI Automation & Workflows',
+  'AI Agents & Assistants',
+  'Web & Business Solutions',
+  'Website Design & Development',
+  'Client Portals & Dashboards',
+  'API & CRM Integrations',
   'Performance Optimization',
-  'Custom Software Development',
-  'Digital Strategy',
   'Other'
 ] as const
 
@@ -42,6 +37,6 @@ export const CONTACT_EMAILS = [
 ]
 
 export const FIVERR_URL = 'https://www.fiverr.com/s/bkdlzbX'
-export const FIVERR_LABEL = 'Hire Us on Fiverr'
+export const FIVERR_LABEL = 'Order on Fiverr'
 
 export const SERVICE_REGIONS = 'USA • UK • Spain • Selected Parts of Asia'

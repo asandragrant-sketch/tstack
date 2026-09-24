@@ -10,7 +10,7 @@ import {
   FIVERR_URL,
   CONTACT_EMAILS
 } from '@/types/contact'
-import { CheckCircle2, AlertCircle, Send, Mail } from 'lucide-react'
+import { CheckCircle2, AlertCircle, ArrowUpRight } from 'lucide-react'
 
 export default function ContactForm() {
   const searchParams = useSearchParams()
@@ -21,13 +21,11 @@ export default function ContactForm() {
     email: '',
     phone: '',
     company: '',
-    service: preselectedService || 'Website Development',
+    service: preselectedService || 'AI Automation & Workflows',
     budget: '$5,000–$10,000',
     message: '',
     websiteBotHoneypot: '',
   })
-
-  const [lastSubmitted, setLastSubmitted] = useState<ContactFormData | null>(null)
 
   useEffect(() => {
     if (preselectedService && SERVICE_OPTIONS.includes(preselectedService as any)) {
@@ -85,23 +83,20 @@ export default function ContactForm() {
     try {
       const response = await fetch('/api/contact', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),
       })
 
       const result = await response.json()
 
       if (response.ok && result.success) {
-        setLastSubmitted({ ...formData })
         setStatus('success')
         setFormData({
           fullName: '',
           email: '',
           phone: '',
           company: '',
-          service: 'Website Development',
+          service: 'AI Automation & Workflows',
           budget: '$5,000–$10,000',
           message: '',
           websiteBotHoneypot: '',
@@ -112,12 +107,12 @@ export default function ContactForm() {
       }
     } catch (err) {
       setStatus('error')
-      setErrorMessage('Network connection failure. Please check your connection or order directly via Fiverr.')
+      setErrorMessage('Network error occurred. Please verify your connection or order directly via Fiverr.')
     }
   }
 
   return (
-    <div className="p-8 sm:p-12 rounded-3xl glass-panel border border-slate-800 shadow-2xl shadow-black/80 relative">
+    <div className="pro-card p-6 sm:p-8 shadow-sm relative">
       {/* Honeypot hidden input for spam protection */}
       <div className="hidden" aria-hidden="true">
         <label htmlFor="websiteBotHoneypot">Do not fill this field</label>
@@ -135,37 +130,37 @@ export default function ContactForm() {
       {status === 'success' ? (
         <div
           role="alert"
-          className="p-8 rounded-2xl bg-slate-900/90 border border-emerald-500/40 text-center space-y-6 my-4 animate-heroFadeIn"
+          className="p-6 rounded-lg bg-slate-900 border border-emerald-500/30 text-center space-y-5 my-2"
         >
-          <div className="w-16 h-16 rounded-full bg-emerald-500/20 border border-emerald-500/50 flex items-center justify-center text-emerald-400 mx-auto">
-            <CheckCircle2 className="w-8 h-8" />
+          <div className="w-12 h-12 rounded-full bg-emerald-950/60 border border-emerald-500/40 flex items-center justify-center text-emerald-400 mx-auto">
+            <CheckCircle2 className="w-6 h-6" />
           </div>
 
-          <div className="space-y-2">
-            <h3 className="text-2xl sm:text-3xl font-bold text-white font-display">
+          <div className="space-y-1.5">
+            <h3 className="text-lg font-semibold text-white">
               Inquiry Successfully Received
             </h3>
-            <p className="text-slate-300 text-sm sm:text-base max-w-lg mx-auto leading-relaxed">
-              Thank you. Your message has been received. We&apos;ll get back to you as soon as possible.
+            <p className="text-xs sm:text-sm text-slate-400 max-w-md mx-auto leading-relaxed">
+              Thank you. Your message has been received by our engineering team. We will review your requirements and respond within 24 business hours.
             </p>
           </div>
 
-          {/* Order Directly via Fiverr with Buyer Protection */}
-          <div className="p-5 rounded-2xl bg-[#1dbf73]/10 border border-[#1dbf73]/30 text-left space-y-3">
-            <div className="flex items-center gap-2 text-[#1dbf73] text-xs font-mono font-bold uppercase tracking-wider">
-              <span className="w-2 h-2 rounded-full bg-[#1dbf73] animate-pulse" />
-              <span>Prefer Escrow &amp; Milestone Protection?</span>
+          {/* Option to Order Directly via Fiverr with Escrow */}
+          <div className="p-4 rounded-lg bg-slate-950/80 border border-slate-800 text-left space-y-2.5">
+            <div className="text-xs font-mono text-emerald-400 font-medium">
+              Prefer Milestone &amp; Escrow Protection?
             </div>
-            <p className="text-xs text-slate-300 leading-relaxed">
+            <p className="text-xs text-slate-400 leading-relaxed">
               You can also initiate your contract and collaborate securely through our verified Fiverr profile:
             </p>
             <a
               href={FIVERR_URL}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center justify-center gap-2 w-full py-3 px-4 rounded-xl bg-[#1dbf73] hover:bg-[#19a463] text-white font-bold text-sm transition-all shadow-lg shadow-[#1dbf73]/20"
+              className="inline-flex items-center justify-center gap-1.5 w-full py-2.5 px-4 rounded-lg bg-[#1dbf73] hover:bg-[#19a463] text-white text-xs font-medium transition-colors shadow-sm"
             >
-              <span>Order Directly on Fiverr (Verified Pro) →</span>
+              <span>Order on Fiverr (Escrow Protected)</span>
+              <ArrowUpRight className="w-3.5 h-3.5" />
             </a>
           </div>
 
@@ -180,22 +175,22 @@ export default function ContactForm() {
           </div>
         </div>
       ) : (
-        <form onSubmit={handleSubmit} noValidate className="space-y-6">
+        <form onSubmit={handleSubmit} noValidate className="space-y-5">
           {status === 'error' && (
             <div
               role="alert"
-              className="p-4 rounded-xl bg-red-950/50 border border-red-500/50 text-red-200 text-sm flex items-start gap-3"
+              className="p-3.5 rounded-lg bg-red-950/40 border border-red-500/40 text-red-300 text-xs flex items-start gap-2.5"
             >
-              <AlertCircle className="w-5 h-5 text-red-400 shrink-0 mt-0.5" />
+              <AlertCircle className="w-4 h-4 text-red-400 shrink-0 mt-0.5" />
               <div>
                 <span>{errorMessage}</span>
-                <div className="mt-2 text-xs">
-                  <span>You can also order directly via our Fiverr profile: </span>
+                <div className="mt-1">
+                  <span>You can also reach us directly on Fiverr: </span>
                   <a
                     href={FIVERR_URL}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-[#1dbf73] font-bold underline ml-1"
+                    className="text-[#1dbf73] font-medium underline"
                   >
                     View Fiverr Profile →
                   </a>
@@ -204,12 +199,12 @@ export default function ContactForm() {
             </div>
           )}
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {/* Full Name */}
             <div>
               <label
                 htmlFor="fullName"
-                className="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-2"
+                className="block text-xs font-medium text-slate-300 mb-1.5"
               >
                 Full Name <span className="text-blue-400">*</span>
               </label>
@@ -217,16 +212,16 @@ export default function ContactForm() {
                 type="text"
                 id="fullName"
                 name="fullName"
-                required
                 value={formData.fullName}
                 onChange={handleChange}
-                placeholder="John Doe"
-                className={`w-full px-4 py-3 rounded-xl bg-slate-900/90 border ${
-                  clientErrors.fullName ? 'border-red-500 ring-1 ring-red-500' : 'border-slate-800'
-                } text-white placeholder-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all`}
+                placeholder="Jane Smith"
+                required
+                className={`w-full px-3.5 py-2.5 rounded-lg bg-slate-900 border ${
+                  clientErrors.fullName ? 'border-red-500' : 'border-slate-800'
+                } text-white placeholder-slate-500 text-xs sm:text-sm focus:outline-none focus:border-blue-500 transition-colors`}
               />
               {clientErrors.fullName && (
-                <p className="text-xs text-red-400 mt-1">{clientErrors.fullName}</p>
+                <p className="text-[11px] text-red-400 mt-1">{clientErrors.fullName}</p>
               )}
             </div>
 
@@ -234,36 +229,36 @@ export default function ContactForm() {
             <div>
               <label
                 htmlFor="email"
-                className="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-2"
+                className="block text-xs font-medium text-slate-300 mb-1.5"
               >
-                Email Address <span className="text-blue-400">*</span>
+                Business Email <span className="text-blue-400">*</span>
               </label>
               <input
                 type="email"
                 id="email"
                 name="email"
-                required
                 value={formData.email}
                 onChange={handleChange}
-                placeholder="john@company.com"
-                className={`w-full px-4 py-3 rounded-xl bg-slate-900/90 border ${
-                  clientErrors.email ? 'border-red-500 ring-1 ring-red-500' : 'border-slate-800'
-                } text-white placeholder-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all`}
+                placeholder="jane@company.com"
+                required
+                className={`w-full px-3.5 py-2.5 rounded-lg bg-slate-900 border ${
+                  clientErrors.email ? 'border-red-500' : 'border-slate-800'
+                } text-white placeholder-slate-500 text-xs sm:text-sm focus:outline-none focus:border-blue-500 transition-colors`}
               />
               {clientErrors.email && (
-                <p className="text-xs text-red-400 mt-1">{clientErrors.email}</p>
+                <p className="text-[11px] text-red-400 mt-1">{clientErrors.email}</p>
               )}
             </div>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-            {/* Phone Number */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {/* Phone */}
             <div>
               <label
                 htmlFor="phone"
-                className="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-2"
+                className="block text-xs font-medium text-slate-300 mb-1.5"
               >
-                Phone Number <span className="text-slate-500 font-normal text-[11px]">(Optional)</span>
+                Phone Number <span className="text-slate-500">(Optional)</span>
               </label>
               <input
                 type="tel"
@@ -272,17 +267,17 @@ export default function ContactForm() {
                 value={formData.phone}
                 onChange={handleChange}
                 placeholder="+1 (555) 000-0000"
-                className="w-full px-4 py-3 rounded-xl bg-slate-900/90 border border-slate-800 text-white placeholder-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+                className="w-full px-3.5 py-2.5 rounded-lg bg-slate-900 border border-slate-800 text-white placeholder-slate-500 text-xs sm:text-sm focus:outline-none focus:border-blue-500 transition-colors"
               />
             </div>
 
-            {/* Company / Organization */}
+            {/* Company */}
             <div>
               <label
                 htmlFor="company"
-                className="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-2"
+                className="block text-xs font-medium text-slate-300 mb-1.5"
               >
-                Company / Organization <span className="text-slate-500 font-normal text-[11px]">(Optional)</span>
+                Company / Organization <span className="text-slate-500">(Optional)</span>
               </label>
               <input
                 type="text"
@@ -291,30 +286,30 @@ export default function ContactForm() {
                 value={formData.company}
                 onChange={handleChange}
                 placeholder="Acme Corp"
-                className="w-full px-4 py-3 rounded-xl bg-slate-900/90 border border-slate-800 text-white placeholder-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+                className="w-full px-3.5 py-2.5 rounded-lg bg-slate-900 border border-slate-800 text-white placeholder-slate-500 text-xs sm:text-sm focus:outline-none focus:border-blue-500 transition-colors"
               />
             </div>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-            {/* Service Needed */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {/* Service Selection */}
             <div>
               <label
                 htmlFor="service"
-                className="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-2"
+                className="block text-xs font-medium text-slate-300 mb-1.5"
               >
-                Service Needed <span className="text-blue-400">*</span>
+                Primary Service Needed <span className="text-blue-400">*</span>
               </label>
               <select
                 id="service"
                 name="service"
                 value={formData.service}
                 onChange={handleChange}
-                className="w-full px-4 py-3 rounded-xl bg-slate-900/90 border border-slate-800 text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+                className="w-full px-3.5 py-2.5 rounded-lg bg-slate-900 border border-slate-800 text-white text-xs sm:text-sm focus:outline-none focus:border-blue-500 transition-colors"
               >
-                {SERVICE_OPTIONS.map((opt) => (
-                  <option key={opt} value={opt} className="bg-slate-950 text-white">
-                    {opt}
+                {SERVICE_OPTIONS.map((srv) => (
+                  <option key={srv} value={srv} className="bg-slate-900 text-white">
+                    {srv}
                   </option>
                 ))}
               </select>
@@ -324,20 +319,20 @@ export default function ContactForm() {
             <div>
               <label
                 htmlFor="budget"
-                className="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-2"
+                className="block text-xs font-medium text-slate-300 mb-1.5"
               >
-                Budget Range <span className="text-blue-400">*</span>
+                Estimated Budget Range <span className="text-blue-400">*</span>
               </label>
               <select
                 id="budget"
                 name="budget"
                 value={formData.budget}
                 onChange={handleChange}
-                className="w-full px-4 py-3 rounded-xl bg-slate-900/90 border border-slate-800 text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+                className="w-full px-3.5 py-2.5 rounded-lg bg-slate-900 border border-slate-800 text-white text-xs sm:text-sm focus:outline-none focus:border-blue-500 transition-colors"
               >
-                {BUDGET_OPTIONS.map((opt) => (
-                  <option key={opt} value={opt} className="bg-slate-950 text-white">
-                    {opt}
+                {BUDGET_OPTIONS.map((b) => (
+                  <option key={b} value={b} className="bg-slate-900 text-white">
+                    {b}
                   </option>
                 ))}
               </select>
@@ -348,9 +343,9 @@ export default function ContactForm() {
           <div>
             <label
               htmlFor="message"
-              className="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-2"
+              className="block text-xs font-medium text-slate-300 mb-1.5"
             >
-              Project Details <span className="text-blue-400">*</span>
+              Project Overview &amp; Requirements <span className="text-blue-400">*</span>
             </label>
             <textarea
               id="message"
@@ -359,24 +354,24 @@ export default function ContactForm() {
               required
               value={formData.message}
               onChange={handleChange}
-              placeholder="Tell us about your project, target audience, timeline, or key technical requirements..."
-              className={`w-full px-4 py-3 rounded-xl bg-slate-900/90 border ${
-                clientErrors.message ? 'border-red-500 ring-1 ring-red-500' : 'border-slate-800'
-              } text-white placeholder-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all`}
+              placeholder="Tell us about the business process you want to automate, tools you use, or web application goals..."
+              className={`w-full px-3.5 py-2.5 rounded-lg bg-slate-900 border ${
+                clientErrors.message ? 'border-red-500' : 'border-slate-800'
+              } text-white placeholder-slate-500 text-xs sm:text-sm focus:outline-none focus:border-blue-500 transition-colors`}
             />
             {clientErrors.message && (
-              <p className="text-xs text-red-400 mt-1">{clientErrors.message}</p>
+              <p className="text-[11px] text-red-400 mt-1">{clientErrors.message}</p>
             )}
           </div>
 
           {/* Submit Action Buttons */}
-          <div className="pt-2 space-y-3">
+          <div className="pt-2 space-y-2.5">
             <Button
               type="submit"
-              variant="glow"
+              variant="primary"
               size="lg"
               loading={status === 'loading'}
-              className="w-full justify-center text-center font-bold tracking-wider uppercase text-sm py-4 shadow-blue-500/25"
+              className="w-full justify-center text-center font-medium text-xs sm:text-sm py-3"
             >
               Submit Project Inquiry
             </Button>
@@ -386,16 +381,15 @@ export default function ContactForm() {
               href={FIVERR_URL}
               target="_blank"
               rel="noopener noreferrer"
-              className="w-full py-3.5 px-4 rounded-xl bg-[#1dbf73] hover:bg-[#19a463] text-white font-bold text-sm tracking-wide transition-all duration-300 flex items-center justify-center gap-2 shadow-lg shadow-[#1dbf73]/25 hover:shadow-[#1dbf73]/40 hover:-translate-y-0.5 active:translate-y-0 focus:outline-none focus:ring-2 focus:ring-[#1dbf73]"
+              className="w-full py-2.5 px-4 rounded-lg bg-[#1dbf73] hover:bg-[#19a463] text-white font-medium text-xs sm:text-sm transition-colors flex items-center justify-center gap-1.5 shadow-sm"
             >
-              <span>Prefer Fiverr? Order Directly on Fiverr</span>
+              <span>Prefer Escrow? Order Directly on Fiverr</span>
+              <ArrowUpRight className="w-3.5 h-3.5" />
             </a>
           </div>
 
-          <div className="pt-3 border-t border-slate-800/80 text-center text-[11px] text-slate-400 font-mono flex items-center justify-center gap-2">
-            <span>Daniel Jacob • TSTACK WEB</span>
-            <span>•</span>
-            <span>100% Confidential</span>
+          <div className="pt-3 border-t border-slate-800/80 text-center text-[11px] text-slate-500 font-mono">
+            <span>David Alison &amp; Daniel Jacob • TSTACK • 100% Confidential</span>
           </div>
         </form>
       )}
