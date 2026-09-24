@@ -5,7 +5,12 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { X, ArrowUpRight, Mail } from 'lucide-react'
 import Logo from './Logo'
-import { FIVERR_URL, CONTACT_EMAILS } from '@/types/contact'
+import {
+  FIVERR_URL,
+  FIVERR_GIG_AUTOMATION_URL,
+  FIVERR_GIG_AGENTS_WEB_URL,
+  CONTACT_EMAILS
+} from '@/types/contact'
 
 interface MobileMenuProps {
   isOpen: boolean
@@ -13,6 +18,7 @@ interface MobileMenuProps {
 }
 
 const NAV_ITEMS = [
+  { label: 'Home', href: '/' },
   { label: 'Services', href: '/services' },
   { label: 'About', href: '/about' },
   { label: 'Contact', href: '/contact' },
@@ -60,17 +66,11 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
       {/* Nav Links */}
       <div className="flex-1 overflow-y-auto px-5 py-6 flex flex-col justify-between">
         <nav className="space-y-1">
-          <Link
-            href="/"
-            onClick={onClose}
-            className={`block px-3 py-2.5 rounded-lg text-base font-medium transition-colors ${
-              pathname === '/' ? 'text-white bg-slate-900' : 'text-slate-300 hover:text-white'
-            }`}
-          >
-            Home
-          </Link>
           {NAV_ITEMS.map((item) => {
-            const isActive = pathname === item.href
+            const isActive =
+              item.href === '/'
+                ? pathname === '/'
+                : pathname.startsWith(item.href)
             return (
               <Link
                 key={item.href}
@@ -89,7 +89,7 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
         </nav>
 
         {/* Actions & Verified Emails */}
-        <div className="pt-6 border-t border-slate-800/80 space-y-4">
+        <div className="pt-6 border-t border-slate-800/80 space-y-3">
           <a
             href={FIVERR_URL}
             target="_blank"
@@ -97,9 +97,32 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
             onClick={onClose}
             className="w-full py-2.5 px-4 rounded-lg bg-[#1dbf73] hover:bg-[#19a463] text-white font-medium text-sm flex items-center justify-center gap-1.5 transition-colors shadow-sm"
           >
-            <span>Order on Fiverr</span>
+            <span>Order on Fiverr (Main Profile)</span>
             <ArrowUpRight className="w-4 h-4" />
           </a>
+
+          <div className="grid grid-cols-2 gap-2 text-xs">
+            <a
+              href={FIVERR_GIG_AUTOMATION_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={onClose}
+              className="p-2 rounded-lg bg-slate-900 border border-slate-800 text-slate-300 hover:text-emerald-400 flex items-center justify-between transition-colors"
+            >
+              <span className="truncate">Automation Gig</span>
+              <ArrowUpRight className="w-3 h-3 text-slate-500 shrink-0" />
+            </a>
+            <a
+              href={FIVERR_GIG_AGENTS_WEB_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={onClose}
+              className="p-2 rounded-lg bg-slate-900 border border-slate-800 text-slate-300 hover:text-emerald-400 flex items-center justify-between transition-colors"
+            >
+              <span className="truncate">Agents &amp; Web Gig</span>
+              <ArrowUpRight className="w-3 h-3 text-slate-500 shrink-0" />
+            </a>
+          </div>
 
           <Link
             href="/contact"

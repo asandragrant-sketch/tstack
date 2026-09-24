@@ -8,6 +8,8 @@ import {
   BUDGET_OPTIONS,
   ContactFormData,
   FIVERR_URL,
+  FIVERR_GIG_AUTOMATION_URL,
+  FIVERR_GIG_AGENTS_WEB_URL,
   CONTACT_EMAILS
 } from '@/types/contact'
 import { CheckCircle2, AlertCircle, ArrowUpRight } from 'lucide-react'
@@ -146,20 +148,45 @@ export default function ContactForm() {
           </div>
 
           {/* Option to Order Directly via Fiverr with Escrow */}
-          <div className="p-4 rounded-lg bg-slate-950/80 border border-slate-800 text-left space-y-2.5">
-            <div className="text-xs font-mono text-emerald-400 font-medium">
-              Prefer Milestone &amp; Escrow Protection?
+          <div className="p-4 rounded-lg bg-slate-950/80 border border-slate-800 text-left space-y-3">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-mono text-emerald-400 font-medium">
+                Prefer Milestone &amp; Escrow Protection?
+              </span>
+              <span className="text-[10px] font-mono text-emerald-400 bg-emerald-950/40 border border-emerald-500/30 px-1.5 py-0.5 rounded">
+                Verified
+              </span>
             </div>
             <p className="text-xs text-slate-400 leading-relaxed">
-              You can also initiate your contract and collaborate securely through our verified Fiverr profile:
+              You can also initiate your contract and collaborate securely through our verified Fiverr gigs:
             </p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
+              <a
+                href={FIVERR_GIG_AUTOMATION_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="p-2 rounded bg-slate-900 border border-slate-800 hover:border-emerald-500/40 text-xs text-slate-300 hover:text-emerald-400 flex items-center justify-between transition-colors"
+              >
+                <span>AI Automation Gig</span>
+                <ArrowUpRight className="w-3 h-3 text-slate-500" />
+              </a>
+              <a
+                href={FIVERR_GIG_AGENTS_WEB_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="p-2 rounded bg-slate-900 border border-slate-800 hover:border-emerald-500/40 text-xs text-slate-300 hover:text-emerald-400 flex items-center justify-between transition-colors"
+              >
+                <span>AI Agents &amp; Web Gig</span>
+                <ArrowUpRight className="w-3 h-3 text-slate-500" />
+              </a>
+            </div>
             <a
               href={FIVERR_URL}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center justify-center gap-1.5 w-full py-2.5 px-4 rounded-lg bg-[#1dbf73] hover:bg-[#19a463] text-white text-xs font-medium transition-colors shadow-sm"
             >
-              <span>Order on Fiverr (Escrow Protected)</span>
+              <span>Main Fiverr Profile (All Services)</span>
               <ArrowUpRight className="w-3.5 h-3.5" />
             </a>
           </div>
@@ -386,6 +413,30 @@ export default function ContactForm() {
               <span>Prefer Escrow? Order Directly on Fiverr</span>
               <ArrowUpRight className="w-3.5 h-3.5" />
             </a>
+
+            {/* Direct Gig Links */}
+            <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1.5 text-xs pt-1">
+              <span className="text-slate-500 font-mono text-[11px]">Direct Gigs:</span>
+              <a
+                href={FIVERR_GIG_AUTOMATION_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-slate-300 hover:text-emerald-400 font-medium inline-flex items-center gap-1 transition-colors"
+              >
+                <span>AI Automation Gig</span>
+                <ArrowUpRight className="w-3 h-3 text-emerald-500" />
+              </a>
+              <span className="text-slate-700 hidden sm:inline">•</span>
+              <a
+                href={FIVERR_GIG_AGENTS_WEB_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-slate-300 hover:text-emerald-400 font-medium inline-flex items-center gap-1 transition-colors"
+              >
+                <span>AI Agents &amp; Web Gig</span>
+                <ArrowUpRight className="w-3 h-3 text-emerald-500" />
+              </a>
+            </div>
           </div>
 
           <div className="pt-3 border-t border-slate-800/80 text-center text-[11px] text-slate-500 font-mono">

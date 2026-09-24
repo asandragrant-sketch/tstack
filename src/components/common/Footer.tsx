@@ -2,7 +2,12 @@ import React from 'react'
 import Link from 'next/link'
 import { Mail, ArrowUpRight } from 'lucide-react'
 import Logo from './Logo'
-import { FIVERR_URL, CONTACT_EMAILS } from '@/types/contact'
+import {
+  FIVERR_URL,
+  FIVERR_GIG_AUTOMATION_URL,
+  FIVERR_GIG_AGENTS_WEB_URL,
+  CONTACT_EMAILS
+} from '@/types/contact'
 
 export default function Footer() {
   const currentYear = 2026
@@ -17,16 +22,43 @@ export default function Footer() {
             <p className="text-xs text-slate-400 leading-relaxed">
               Engineering AI automation, intelligent agents, and bespoke digital solutions for growing companies worldwide.
             </p>
-            <div className="pt-1">
-              <a
-                href={FIVERR_URL}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 text-xs font-medium text-emerald-400 hover:text-emerald-300 transition-colors"
-              >
-                <span>Hire us on Fiverr</span>
-                <ArrowUpRight className="w-3.5 h-3.5" />
-              </a>
+            <div className="pt-2 space-y-1.5 text-xs">
+              <span className="text-[11px] font-mono text-slate-500 uppercase tracking-wider block">
+                Verified Fiverr Gigs:
+              </span>
+              <div>
+                <a
+                  href={FIVERR_GIG_AUTOMATION_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1 text-slate-300 hover:text-emerald-400 transition-colors"
+                >
+                  <span>AI Automation Gig</span>
+                  <ArrowUpRight className="w-3 h-3 text-emerald-500" />
+                </a>
+              </div>
+              <div>
+                <a
+                  href={FIVERR_GIG_AGENTS_WEB_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1 text-slate-300 hover:text-emerald-400 transition-colors"
+                >
+                  <span>AI Agents &amp; Web Gig</span>
+                  <ArrowUpRight className="w-3 h-3 text-emerald-500" />
+                </a>
+              </div>
+              <div className="pt-0.5">
+                <a
+                  href={FIVERR_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1 text-emerald-400 hover:text-emerald-300 transition-colors font-medium"
+                >
+                  <span>Main Pro Profile (All Services)</span>
+                  <ArrowUpRight className="w-3.5 h-3.5" />
+                </a>
+              </div>
             </div>
           </div>
 

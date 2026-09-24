@@ -14,7 +14,12 @@ import {
   Mail,
   Workflow
 } from 'lucide-react'
-import { FIVERR_URL, CONTACT_EMAILS } from '@/types/contact'
+import {
+  FIVERR_URL,
+  FIVERR_GIG_AUTOMATION_URL,
+  FIVERR_GIG_AGENTS_WEB_URL,
+  CONTACT_EMAILS
+} from '@/types/contact'
 
 export const metadata: Metadata = {
   title: 'Services & Capabilities | TSTACK AI & Digital Solutions',
@@ -31,6 +36,8 @@ const SERVICE_CATEGORIES = [
     id: 'ai-automation',
     icon: Cpu,
     tagline: 'Eliminate repetitive manual tasks and connect siloed business tools.',
+    fiverrUrl: FIVERR_GIG_AUTOMATION_URL,
+    gigLabel: 'Automation Gig',
     services: [
       {
         title: 'Event-Driven Workflow Automation',
@@ -69,6 +76,8 @@ const SERVICE_CATEGORIES = [
     id: 'ai-agents',
     icon: Bot,
     tagline: 'Deploy autonomous agents trained on your business rules and private data.',
+    fiverrUrl: FIVERR_GIG_AGENTS_WEB_URL,
+    gigLabel: 'Agents Gig',
     services: [
       {
         title: 'Private Knowledge Retrieval Agents (RAG)',
@@ -107,6 +116,8 @@ const SERVICE_CATEGORIES = [
     id: 'web-solutions',
     icon: Layout,
     tagline: 'High-speed, scalable web applications and bespoke client portals.',
+    fiverrUrl: FIVERR_GIG_AGENTS_WEB_URL,
+    gigLabel: 'Web Gig',
     services: [
       {
         title: 'Full-Stack Web Applications',
@@ -145,6 +156,8 @@ const SERVICE_CATEGORIES = [
     id: 'maintenance',
     icon: Zap,
     tagline: 'Keep your digital infrastructure fast, secure, and always accessible.',
+    fiverrUrl: FIVERR_URL,
+    gigLabel: 'Fiverr Pro',
     services: [
       {
         title: 'Core Web Vitals & Speed Optimization',
@@ -206,6 +219,30 @@ export default function ServicesPage() {
               >
                 Request Custom Scope
               </Link>
+            </div>
+
+            {/* Quick Gigs strip */}
+            <div className="pt-2 flex flex-wrap items-center gap-x-4 gap-y-1.5 text-xs">
+              <span className="text-slate-500 font-mono">Specific Gigs:</span>
+              <a
+                href={FIVERR_GIG_AUTOMATION_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-slate-300 hover:text-emerald-400 font-medium inline-flex items-center gap-1 transition-colors"
+              >
+                <span>AI Automation Gig</span>
+                <ArrowUpRight className="w-3 h-3 text-emerald-500" />
+              </a>
+              <span className="text-slate-700 hidden sm:inline">•</span>
+              <a
+                href={FIVERR_GIG_AGENTS_WEB_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-slate-300 hover:text-emerald-400 font-medium inline-flex items-center gap-1 transition-colors"
+              >
+                <span>AI Agents &amp; Web Gig</span>
+                <ArrowUpRight className="w-3 h-3 text-emerald-500" />
+              </a>
             </div>
           </div>
         </div>
@@ -273,12 +310,12 @@ export default function ServicesPage() {
                         Request Quote →
                       </Link>
                       <a
-                        href={FIVERR_URL}
+                        href={cat.fiverrUrl}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-[#1dbf73] hover:text-emerald-300 font-medium inline-flex items-center gap-0.5"
                       >
-                        <span>Fiverr</span>
+                        <span>{cat.gigLabel || 'Order Gig'}</span>
                         <ArrowUpRight className="w-3 h-3" />
                       </a>
                     </div>
@@ -315,6 +352,29 @@ export default function ServicesPage() {
             >
               Send an Inquiry
             </Link>
+          </div>
+
+          <div className="pt-3 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-xs">
+            <span className="text-slate-500 font-mono">Specific Gigs:</span>
+            <a
+              href={FIVERR_GIG_AUTOMATION_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-slate-300 hover:text-emerald-400 font-medium inline-flex items-center gap-1 transition-colors"
+            >
+              <span>AI Automation Gig</span>
+              <ArrowUpRight className="w-3 h-3 text-emerald-500" />
+            </a>
+            <span className="text-slate-700 hidden sm:inline">•</span>
+            <a
+              href={FIVERR_GIG_AGENTS_WEB_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-slate-300 hover:text-emerald-400 font-medium inline-flex items-center gap-1 transition-colors"
+            >
+              <span>AI Agents &amp; Web Gig</span>
+              <ArrowUpRight className="w-3 h-3 text-emerald-500" />
+            </a>
           </div>
 
           <div className="pt-6 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-xs font-mono text-slate-400">

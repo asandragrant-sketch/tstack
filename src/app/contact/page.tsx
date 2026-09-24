@@ -2,7 +2,13 @@ import React, { Suspense } from 'react'
 import type { Metadata } from 'next'
 import ContactForm from '@/components/contact/ContactForm'
 import { Mail, Globe2, Clock, ArrowUpRight } from 'lucide-react'
-import { CONTACT_EMAILS, SERVICE_REGIONS, FIVERR_URL } from '@/types/contact'
+import {
+  CONTACT_EMAILS,
+  SERVICE_REGIONS,
+  FIVERR_URL,
+  FIVERR_GIG_AUTOMATION_URL,
+  FIVERR_GIG_AGENTS_WEB_URL
+} from '@/types/contact'
 
 export const metadata: Metadata = {
   title: 'Contact TSTACK | Project Inquiries & Consultations',
@@ -50,28 +56,68 @@ export default function ContactPage() {
                 </p>
               </div>
 
-              {/* Direct Fiverr Action Card */}
-              <a
-                href={FIVERR_URL}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="pro-card p-4 hover:border-emerald-500/40 flex items-center justify-between transition-colors group"
-              >
-                <div className="flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-md bg-emerald-950/50 border border-emerald-500/30 flex items-center justify-center text-[#1dbf73] font-bold text-xs">
-                    fi.
+              {/* Direct Fiverr Orders & Verified Gigs Card */}
+              <div className="pro-card p-4 space-y-3">
+                <div className="flex items-center justify-between pb-2 border-b border-slate-800">
+                  <div className="flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-[#1dbf73]" />
+                    <span className="text-xs font-semibold text-white">Verified Fiverr Orders</span>
                   </div>
-                  <div>
-                    <div className="text-[11px] font-mono text-emerald-400 font-medium">
-                      Official Fiverr Marketplace
-                    </div>
-                    <div className="text-xs font-medium text-white group-hover:text-emerald-300 transition-colors">
-                      Order with 100% Escrow &amp; Buyer Protection
-                    </div>
-                  </div>
+                  <span className="text-[10px] font-mono text-emerald-400 bg-emerald-950/40 border border-emerald-500/30 px-2 py-0.5 rounded">
+                    100% Escrow
+                  </span>
                 </div>
-                <ArrowUpRight className="w-4 h-4 text-emerald-400 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
-              </a>
+
+                <p className="text-xs text-slate-400 leading-relaxed">
+                  Initiate your project with milestone protection and verified delivery standards on Fiverr:
+                </p>
+
+                <div className="space-y-2 pt-1">
+                  <a
+                    href={FIVERR_GIG_AUTOMATION_URL}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="p-2.5 rounded-lg bg-slate-900 border border-slate-800 hover:border-emerald-500/40 flex items-center justify-between transition-colors group"
+                  >
+                    <div>
+                      <div className="text-xs font-medium text-slate-200 group-hover:text-emerald-400">
+                        AI Automation &amp; Workflows Gig
+                      </div>
+                      <div className="text-[11px] text-slate-400">
+                        Pipelines, CRM sync &amp; automated workflows
+                      </div>
+                    </div>
+                    <ArrowUpRight className="w-3.5 h-3.5 text-slate-500 group-hover:text-emerald-400" />
+                  </a>
+
+                  <a
+                    href={FIVERR_GIG_AGENTS_WEB_URL}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="p-2.5 rounded-lg bg-slate-900 border border-slate-800 hover:border-emerald-500/40 flex items-center justify-between transition-colors group"
+                  >
+                    <div>
+                      <div className="text-xs font-medium text-slate-200 group-hover:text-emerald-400">
+                        AI Agents &amp; Web Solutions Gig
+                      </div>
+                      <div className="text-[11px] text-slate-400">
+                        Autonomous agents &amp; Next.js platforms
+                      </div>
+                    </div>
+                    <ArrowUpRight className="w-3.5 h-3.5 text-slate-500 group-hover:text-emerald-400" />
+                  </a>
+
+                  <a
+                    href={FIVERR_URL}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="p-2.5 rounded-lg bg-slate-900/60 border border-slate-800/60 hover:border-slate-700 flex items-center justify-between transition-colors text-xs text-slate-400 hover:text-slate-200"
+                  >
+                    <span>Main Fiverr Pro Profile (All Services)</span>
+                    <ArrowUpRight className="w-3.5 h-3.5 text-slate-500" />
+                  </a>
+                </div>
+              </div>
 
               {/* Verified Email List */}
               <div className="space-y-2">

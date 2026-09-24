@@ -17,7 +17,7 @@ Serving clients across the **USA • UK • Spain • Selected Parts of Asia**.
   3. **Web & Business Solutions**: Production-grade Next.js web applications, client management portals, and modern business websites.
 - **Full Capabilities Directory (`/services`)**: In-depth breakdown organized into 4 categorized engineering areas with direct quote and Fiverr order triggers.
 - **Leadership & Engineering Team (`/about`)**: Featuring Founder & Lead Solutions Architect **Daniel Jacob**, alongside key engineering partners **David Alison** and **Baron**.
-- **Direct Fiverr Integration**: Official order actions linking directly to verified pro profile **`https://www.fiverr.com/s/bkdlzbX`** with 100% milestone escrow protection.
+- **Direct Fiverr Integration**: Official order actions linking directly to verified pro profile **`https://www.fiverr.com/s/bkdlzbX`** and direct gigs for **AI Automation (`https://www.fiverr.com/s/qbD3WD5`)** and **AI Agents & Web (`https://www.fiverr.com/s/432kmGk`)** with 100% milestone escrow protection.
 - **Verified Communication Channels**: Server-side API route (`/api/contact`) with validation, anti-spam honeypot, and multi-channel routing to `davidalisonwebpro@gmail.com`, `baronwebpro@gmail.com`, `b.elowenwebpro@gmail.com`, and `d.jacobwebpro@gmail.com`.
 - **Zero WhatsApp**: WhatsApp has been completely removed across the platform in favor of secure Fiverr escrow and direct verified email channels.
 
@@ -58,9 +58,11 @@ npm run start
 
 ---
 
-## 📬 Direct Communications
+## 📬 Direct Communications & Verified Orders
 
-- **Order on Fiverr (Verified Pro)**: [https://www.fiverr.com/s/bkdlzbX](https://www.fiverr.com/s/bkdlzbX)
+- **AI Automation & Workflows Gig**: [https://www.fiverr.com/s/qbD3WD5](https://www.fiverr.com/s/qbD3WD5)
+- **AI Agents & Web Solutions Gig**: [https://www.fiverr.com/s/432kmGk](https://www.fiverr.com/s/432kmGk)
+- **Fiverr Pro Profile (All Services)**: [https://www.fiverr.com/s/bkdlzbX](https://www.fiverr.com/s/bkdlzbX)
 - **Technical Solutions & AI Architecture**: [davidalisonwebpro@gmail.com](mailto:davidalisonwebpro@gmail.com)
 - **Project Delivery & Management**: [baronwebpro@gmail.com](mailto:baronwebpro@gmail.com)
 - **Lead Solutions Architect**: [d.jacobwebpro@gmail.com](mailto:d.jacobwebpro@gmail.com)

@@ -1,7 +1,7 @@
 import React from 'react'
 import Link from 'next/link'
 import { ArrowUpRight, ArrowRight, CheckCircle2, ShieldCheck, Zap } from 'lucide-react'
-import { FIVERR_URL } from '@/types/contact'
+import { FIVERR_URL, FIVERR_GIG_AUTOMATION_URL, FIVERR_GIG_AGENTS_WEB_URL } from '@/types/contact'
 
 export default function Hero() {
   return (
@@ -44,6 +44,30 @@ export default function Hero() {
               <span>View Core Services</span>
               <ArrowRight className="w-4 h-4 text-slate-400" />
             </Link>
+          </div>
+
+          {/* Quick Direct Gig Links */}
+          <div className="pt-2 flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-xs">
+            <span className="text-slate-500 font-mono">Specific Gigs:</span>
+            <a
+              href={FIVERR_GIG_AUTOMATION_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1 text-slate-300 hover:text-emerald-400 font-medium transition-colors"
+            >
+              <span>AI Automation Gig</span>
+              <ArrowUpRight className="w-3 h-3 text-emerald-500" />
+            </a>
+            <span className="text-slate-700 hidden sm:inline">•</span>
+            <a
+              href={FIVERR_GIG_AGENTS_WEB_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1 text-slate-300 hover:text-emerald-400 font-medium transition-colors"
+            >
+              <span>AI Agents &amp; Web Gig</span>
+              <ArrowUpRight className="w-3 h-3 text-emerald-500" />
+            </a>
           </div>
 
           {/* Micro trust indicators */}

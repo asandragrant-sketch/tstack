@@ -1,7 +1,8 @@
 import React from 'react'
 import Link from 'next/link'
-import { Cpu, Bot, Layout, ArrowRight, CheckCircle2 } from 'lucide-react'
+import { Cpu, Bot, Layout, ArrowRight, ArrowUpRight, CheckCircle2 } from 'lucide-react'
 import SectionHeading from '@/components/common/SectionHeading'
+import { FIVERR_GIG_AUTOMATION_URL, FIVERR_GIG_AGENTS_WEB_URL } from '@/types/contact'
 
 const FEATURED_SERVICES = [
   {
@@ -16,6 +17,8 @@ const FEATURED_SERVICES = [
       'Document processing & data extraction',
     ],
     href: '/services#ai-automation',
+    fiverrUrl: FIVERR_GIG_AUTOMATION_URL,
+    gigBadge: 'AI Automation Gig',
   },
   {
     id: 'ai-agents',
@@ -29,6 +32,8 @@ const FEATURED_SERVICES = [
       'Multi-channel customer inquiry agents',
     ],
     href: '/services#ai-agents',
+    fiverrUrl: FIVERR_GIG_AGENTS_WEB_URL,
+    gigBadge: 'AI Agents Gig',
   },
   {
     id: 'web-solutions',
@@ -42,6 +47,8 @@ const FEATURED_SERVICES = [
       'Fast, accessible conversion architecture',
     ],
     href: '/services#web-solutions',
+    fiverrUrl: FIVERR_GIG_AGENTS_WEB_URL,
+    gigBadge: 'Web Solutions Gig',
   },
 ]
 
@@ -66,8 +73,13 @@ export default function FeaturedServices() {
                 className="pro-card pro-card-hover p-6 sm:p-7 flex flex-col justify-between"
               >
                 <div>
-                  <div className="w-10 h-10 rounded-lg bg-slate-900 border border-slate-800 flex items-center justify-center text-blue-400 mb-5">
-                    <Icon className="w-5 h-5" />
+                  <div className="flex items-center justify-between mb-5">
+                    <div className="w-10 h-10 rounded-lg bg-slate-900 border border-slate-800 flex items-center justify-center text-blue-400">
+                      <Icon className="w-5 h-5" />
+                    </div>
+                    <span className="text-[11px] font-mono text-emerald-400 bg-emerald-950/40 border border-emerald-500/30 px-2 py-0.5 rounded">
+                      Fiverr Gig
+                    </span>
                   </div>
 
                   <h3 className="text-lg font-semibold text-white mb-2.5">
@@ -88,13 +100,25 @@ export default function FeaturedServices() {
                   </div>
                 </div>
 
-                <Link
-                  href={service.href}
-                  className="inline-flex items-center gap-1.5 text-xs font-medium text-slate-300 hover:text-white transition-colors group"
-                >
-                  <span>Learn more</span>
-                  <ArrowRight className="w-3.5 h-3.5 text-slate-500 transition-transform group-hover:translate-x-1" />
-                </Link>
+                <div className="pt-4 border-t border-slate-800/80 flex items-center justify-between text-xs">
+                  <Link
+                    href={service.href}
+                    className="inline-flex items-center gap-1.5 font-medium text-slate-300 hover:text-white transition-colors group"
+                  >
+                    <span>Learn more</span>
+                    <ArrowRight className="w-3.5 h-3.5 text-slate-500 transition-transform group-hover:translate-x-1" />
+                  </Link>
+
+                  <a
+                    href={service.fiverrUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1 font-medium text-[#1dbf73] hover:text-emerald-300 transition-colors"
+                  >
+                    <span>Order Gig</span>
+                    <ArrowUpRight className="w-3.5 h-3.5" />
+                  </a>
+                </div>
               </div>
             )
           })}

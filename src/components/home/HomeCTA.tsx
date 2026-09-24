@@ -1,7 +1,7 @@
 import React from 'react'
 import Link from 'next/link'
 import { ArrowUpRight, Mail } from 'lucide-react'
-import { FIVERR_URL } from '@/types/contact'
+import { FIVERR_URL, FIVERR_GIG_AUTOMATION_URL, FIVERR_GIG_AGENTS_WEB_URL } from '@/types/contact'
 
 export default function HomeCTA() {
   return (
@@ -20,7 +20,7 @@ export default function HomeCTA() {
         </p>
 
         {/* Action Buttons */}
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-3.5 mb-10">
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-3.5 mb-6">
           <a
             href={FIVERR_URL}
             target="_blank"
@@ -37,6 +37,30 @@ export default function HomeCTA() {
           >
             Send a Project Inquiry
           </Link>
+        </div>
+
+        {/* Specific Gigs */}
+        <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-xs mb-10">
+          <span className="text-slate-500 font-mono">Direct Gigs:</span>
+          <a
+            href={FIVERR_GIG_AUTOMATION_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1 text-slate-300 hover:text-emerald-400 font-medium transition-colors"
+          >
+            <span>AI Automation Gig</span>
+            <ArrowUpRight className="w-3 h-3 text-emerald-500" />
+          </a>
+          <span className="text-slate-700 hidden sm:inline">•</span>
+          <a
+            href={FIVERR_GIG_AGENTS_WEB_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1 text-slate-300 hover:text-emerald-400 font-medium transition-colors"
+          >
+            <span>AI Agents &amp; Web Gig</span>
+            <ArrowUpRight className="w-3 h-3 text-emerald-500" />
+          </a>
         </div>
 
         {/* Verified Direct Emails */}

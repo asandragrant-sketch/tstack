@@ -1,5 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { CONTACT_EMAILS, FIVERR_URL } from '@/types/contact'
+import {
+  CONTACT_EMAILS,
+  FIVERR_URL,
+  FIVERR_GIG_AUTOMATION_URL,
+  FIVERR_GIG_AGENTS_WEB_URL
+} from '@/types/contact'
 
 export async function POST(request: NextRequest) {
   try {
@@ -71,6 +76,8 @@ export async function POST(request: NextRequest) {
       message: message.trim(),
       recipients: CONTACT_EMAILS,
       fiverr: FIVERR_URL,
+      fiverrAutomationGig: FIVERR_GIG_AUTOMATION_URL,
+      fiverrAgentsWebGig: FIVERR_GIG_AGENTS_WEB_URL,
       timestamp: new Date().toISOString(),
     }
 

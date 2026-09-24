@@ -39,4 +39,48 @@ export const CONTACT_EMAILS = [
 export const FIVERR_URL = 'https://www.fiverr.com/s/bkdlzbX'
 export const FIVERR_LABEL = 'Order on Fiverr'
 
+// Verified Direct Gig URLs
+export const FIVERR_GIG_AUTOMATION_URL = 'https://www.fiverr.com/s/qbD3WD5'
+export const FIVERR_GIG_AGENTS_WEB_URL = 'https://www.fiverr.com/s/432kmGk'
+
+export interface FiverrGigItem {
+  id: string
+  title: string
+  shortTitle: string
+  description: string
+  url: string
+  category: string
+  badge?: string
+}
+
+export const FIVERR_GIGS: FiverrGigItem[] = [
+  {
+    id: 'ai-automation',
+    title: 'AI Automation & Workflows Gig',
+    shortTitle: 'AI Automation Gig',
+    description: 'Custom automated pipelines, webhook & API sync, CRM lead routing, and document processing.',
+    url: 'https://www.fiverr.com/s/qbD3WD5',
+    category: 'Automation & Integration',
+    badge: 'Popular',
+  },
+  {
+    id: 'ai-agents-web',
+    title: 'AI Agents & Web Solutions Gig',
+    shortTitle: 'AI Agents & Web Gig',
+    description: 'Autonomous customer support agents, private RAG knowledge assistants, and modern web platforms.',
+    url: 'https://www.fiverr.com/s/432kmGk',
+    category: 'Agents & Full-Stack',
+    badge: 'Direct Order',
+  },
+  {
+    id: 'main-profile',
+    title: 'TSTACK Pro Profile & Custom Scopes',
+    shortTitle: 'Main Pro Profile',
+    description: 'Bespoke enterprise milestones, consulting contracts, and multi-disciplinary systems architecture.',
+    url: 'https://www.fiverr.com/s/bkdlzbX',
+    category: 'All Services',
+    badge: 'Pro Verified',
+  },
+]
+
 export const SERVICE_REGIONS = 'USA • UK • Spain • Selected Parts of Asia'
