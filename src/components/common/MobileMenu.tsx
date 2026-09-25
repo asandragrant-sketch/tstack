@@ -124,6 +124,15 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
             </a>
           </div>
 
+          <a
+            href="http://localhost:3001"
+            onClick={onClose}
+            className="w-full py-2.5 px-4 rounded-lg bg-slate-900 border border-slate-700/80 hover:bg-slate-800 text-slate-200 font-medium text-sm flex items-center justify-center gap-1.5 transition-colors"
+          >
+            <span>Client WebApp &amp; Portal</span>
+            <ArrowUpRight className="w-4 h-4 text-slate-400" />
+          </a>
+
           <Link
             href="/contact"
             onClick={onClose}

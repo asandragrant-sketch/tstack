@@ -165,6 +165,15 @@ export default function Header() {
                 )}
               </div>
 
+              <a
+                href="http://localhost:3001"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium text-slate-300 hover:text-white bg-slate-900 hover:bg-slate-800 border border-slate-700/60 transition-colors"
+                title="Launch TSTACK Client WebApp (Orders, Milestones, Dashboard)"
+              >
+                <span>Client Portal</span>
+                <ArrowUpRight className="w-3.5 h-3.5 text-slate-400" />
+              </a>
+
               <Link
                 href="/contact"
                 className="inline-flex items-center px-3.5 py-1.5 rounded-md text-xs font-medium text-slate-900 bg-white hover:bg-slate-100 transition-colors"
