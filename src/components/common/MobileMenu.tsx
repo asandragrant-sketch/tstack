@@ -15,6 +15,7 @@ import {
 interface MobileMenuProps {
   isOpen: boolean
   onClose: () => void
+  onOpenPortal?: () => void
 }
 
 const NAV_ITEMS = [
@@ -24,19 +25,25 @@ const NAV_ITEMS = [
   { label: 'Contact', href: '/contact' },
 ]
 
-export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
+export default function MobileMenu({ isOpen, onClose, onOpenPortal }: MobileMenuProps) {
   const pathname = usePathname()
 
   useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose()
+    }
+
     if (isOpen) {
       document.body.style.overflow = 'hidden'
+      window.addEventListener('keydown', handleKeyDown)
     } else {
       document.body.style.overflow = ''
     }
     return () => {
       document.body.style.overflow = ''
+      window.removeEventListener('keydown', handleKeyDown)
     }
-  }, [isOpen])
+  }, [isOpen, onClose])
 
   useEffect(() => {
     onClose()
@@ -124,19 +131,22 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
             </a>
           </div>
 
-          <a
-            href="http://localhost:3001"
-            onClick={onClose}
-            className="w-full py-2.5 px-4 rounded-lg bg-slate-900 border border-slate-700/80 hover:bg-slate-800 text-slate-200 font-medium text-sm flex items-center justify-center gap-1.5 transition-colors"
+          <button
+            type="button"
+            onClick={() => {
+              onClose()
+              if (onOpenPortal) onOpenPortal()
+            }}
+            className="w-full min-h-[44px] py-2.5 px-4 rounded-lg bg-slate-900 border border-slate-700/80 hover:bg-slate-850 text-slate-200 font-medium text-sm flex items-center justify-center gap-1.5 transition-colors"
           >
             <span>Client WebApp &amp; Portal</span>
             <ArrowUpRight className="w-4 h-4 text-slate-400" />
-          </a>
+          </button>
 
           <Link
             href="/contact"
             onClick={onClose}
-            className="w-full py-2.5 px-4 rounded-lg bg-white hover:bg-slate-100 text-slate-900 font-medium text-sm flex items-center justify-center transition-colors"
+            className="w-full min-h-[44px] py-2.5 px-4 rounded-lg bg-white hover:bg-slate-100 text-slate-900 font-medium text-sm flex items-center justify-center transition-colors"
           >
             Start a Project
           </Link>

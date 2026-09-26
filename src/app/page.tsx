@@ -4,7 +4,9 @@ import Hero from '@/components/home/Hero'
 import TrustBar from '@/components/home/TrustBar'
 import FeaturedServices from '@/components/home/FeaturedServices'
 import FeaturedWork from '@/components/home/FeaturedWork'
+import ProjectEstimator from '@/components/home/ProjectEstimator'
 import WhyTStack from '@/components/home/WhyTStack'
+import FAQSection from '@/components/home/FAQSection'
 import HomeCTA from '@/components/home/HomeCTA'
 
 export const metadata: Metadata = {
@@ -30,8 +32,10 @@ export default function HomePage() {
       <Hero />
       <TrustBar />
       <FeaturedServices />
+      <ProjectEstimator />
       <FeaturedWork />
       <WhyTStack />
+      <FAQSection />
       <HomeCTA />
     </>
   )

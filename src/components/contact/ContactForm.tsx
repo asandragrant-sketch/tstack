@@ -17,6 +17,9 @@ import { CheckCircle2, AlertCircle, ArrowUpRight } from 'lucide-react'
 export default function ContactForm() {
   const searchParams = useSearchParams()
   const preselectedService = searchParams.get('service')
+  const preselectedBudget = searchParams.get('budget')
+  const preselectedTimeline = searchParams.get('timeline')
+  const preselectedModules = searchParams.get('modules')
 
   const [formData, setFormData] = useState<ContactFormData>({
     fullName: '',
@@ -24,7 +27,7 @@ export default function ContactForm() {
     phone: '',
     company: '',
     service: preselectedService || 'AI Automation & Workflows',
-    budget: '$5,000–$10,000',
+    budget: preselectedBudget || '$5,000–$10,000',
     message: '',
     websiteBotHoneypot: '',
   })
@@ -33,11 +36,30 @@ export default function ContactForm() {
     if (preselectedService && SERVICE_OPTIONS.includes(preselectedService as any)) {
       setFormData((prev) => ({ ...prev, service: preselectedService }))
     }
-  }, [preselectedService])
+    if (preselectedBudget && BUDGET_OPTIONS.includes(preselectedBudget as any)) {
+      setFormData((prev) => ({ ...prev, budget: preselectedBudget }))
+    }
+    if (preselectedTimeline || preselectedModules) {
+      const summaryText = `[Configured Project Scope]\nTarget Timeline: ${preselectedTimeline || 'Flexible'}\nIncluded Modules: ${preselectedModules || 'Standard'}\n\nProject details & goals: `
+      setFormData((prev) => ({
+        ...prev,
+        message: prev.message ? prev.message : summaryText,
+      }))
+    }
+  }, [preselectedService, preselectedBudget, preselectedTimeline, preselectedModules])
 
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
   const [errorMessage, setErrorMessage] = useState('')
   const [clientErrors, setClientErrors] = useState<Record<string, string>>({})
+  const [copiedEmail, setCopiedEmail] = useState<string | null>(null)
+
+  const copyEmailToClipboard = (email: string) => {
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(email)
+      setCopiedEmail(email)
+      setTimeout(() => setCopiedEmail(null), 2500)
+    }
+  }
 
   const validate = (): boolean => {
     const errors: Record<string, string> = {}
@@ -55,7 +77,7 @@ export default function ContactForm() {
       errors.budget = 'Please select an estimated budget range.'
     }
     if (!formData.message.trim() || formData.message.trim().length < 5) {
-      errors.message = 'Please provide details about your project.'
+      errors.message = 'Please provide details about your project (minimum 5 characters).'
     }
 
     setClientErrors(errors)
@@ -68,7 +90,11 @@ export default function ContactForm() {
     const { name, value } = e.target
     setFormData((prev) => ({ ...prev, [name]: value }))
     if (clientErrors[name]) {
-      setClientErrors((prev) => ({ ...prev, [name]: '' }))
+      setClientErrors((prev) => {
+        const next = { ...prev }
+        delete next[name]
+        return next
+      })
     }
   }
 
@@ -368,16 +394,21 @@ export default function ContactForm() {
 
           {/* Project Details */}
           <div>
-            <label
-              htmlFor="message"
-              className="block text-xs font-medium text-slate-300 mb-1.5"
-            >
-              Project Overview &amp; Requirements <span className="text-blue-400">*</span>
-            </label>
+            <div className="flex items-center justify-between mb-1.5">
+              <label
+                htmlFor="message"
+                className="block text-xs font-medium text-slate-300"
+              >
+                Project Overview &amp; Requirements <span className="text-blue-400">*</span>
+              </label>
+              <span className="text-[11px] font-mono text-slate-500">
+                {formData.message.length} chars
+              </span>
+            </div>
             <textarea
               id="message"
               name="message"
-              rows={4}
+              rows={5}
               required
               value={formData.message}
               onChange={handleChange}
@@ -389,6 +420,34 @@ export default function ContactForm() {
             {clientErrors.message && (
               <p className="text-[11px] text-red-400 mt-1">{clientErrors.message}</p>
             )}
+          </div>
+
+          {/* Quick Copy Direct Inquiries */}
+          <div className="p-3 rounded-lg bg-slate-950/70 border border-slate-850 space-y-1.5 text-xs">
+            <div className="flex items-center justify-between">
+              <span className="text-slate-400 font-mono text-[11px]">
+                Prefer sending your PRD/brief directly via email?
+              </span>
+              {copiedEmail && (
+                <span className="text-[10px] font-mono text-emerald-400 bg-emerald-950/60 px-1.5 py-0.5 rounded border border-emerald-500/30 animate-pulse">
+                  Copied to clipboard!
+                </span>
+              )}
+            </div>
+            <div className="flex flex-wrap gap-2 pt-1 font-mono text-[11px]">
+              {CONTACT_EMAILS.slice(0, 3).map((email) => (
+                <button
+                  key={email}
+                  type="button"
+                  onClick={() => copyEmailToClipboard(email)}
+                  title={`Click to copy ${email}`}
+                  className="px-2 py-1 rounded bg-slate-900 hover:bg-slate-800 border border-slate-800 hover:border-slate-700 text-slate-300 hover:text-white transition-colors flex items-center gap-1"
+                >
+                  <span>{email}</span>
+                  <span className="text-slate-500 text-[10px]">copy</span>
+                </button>
+              ))}
+            </div>
           </div>
 
           {/* Submit Action Buttons */}

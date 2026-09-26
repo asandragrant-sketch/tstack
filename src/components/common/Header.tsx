@@ -6,6 +6,7 @@ import { usePathname } from 'next/navigation'
 import { Menu, ArrowUpRight, ChevronDown } from 'lucide-react'
 import Logo from './Logo'
 import MobileMenu from './MobileMenu'
+import PortalModal from './PortalModal'
 import {
   FIVERR_URL,
   FIVERR_GIG_AUTOMATION_URL,
@@ -23,6 +24,7 @@ export default function Header() {
   const [isScrolled, setIsScrolled] = useState(false)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [fiverrMenuOpen, setFiverrMenuOpen] = useState(false)
+  const [portalModalOpen, setPortalModalOpen] = useState(false)
   const fiverrRef = useRef<HTMLDivElement>(null)
   const pathname = usePathname()
 
@@ -40,8 +42,17 @@ export default function Header() {
         setFiverrMenuOpen(false)
       }
     }
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setFiverrMenuOpen(false)
+      }
+    }
     document.addEventListener('mousedown', handleClickOutside)
-    return () => document.removeEventListener('mousedown', handleClickOutside)
+    window.addEventListener('keydown', handleKeyDown)
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+      window.removeEventListener('keydown', handleKeyDown)
+    }
   }, [])
 
   return (
@@ -165,18 +176,19 @@ export default function Header() {
                 )}
               </div>
 
-              <a
-                href="http://localhost:3001"
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium text-slate-300 hover:text-white bg-slate-900 hover:bg-slate-800 border border-slate-700/60 transition-colors"
+              <button
+                type="button"
+                onClick={() => setPortalModalOpen(true)}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium text-slate-300 hover:text-white bg-slate-900 hover:bg-slate-850 border border-slate-700/60 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
                 title="Launch TSTACK Client WebApp (Orders, Milestones, Dashboard)"
               >
                 <span>Client Portal</span>
                 <ArrowUpRight className="w-3.5 h-3.5 text-slate-400" />
-              </a>
+              </button>
 
               <Link
                 href="/contact"
-                className="inline-flex items-center px-3.5 py-1.5 rounded-md text-xs font-medium text-slate-900 bg-white hover:bg-slate-100 transition-colors"
+                className="inline-flex items-center px-3.5 py-1.5 rounded-md text-xs font-medium text-slate-900 bg-white hover:bg-slate-100 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
               >
                 Start a Project
               </Link>
@@ -196,7 +208,7 @@ export default function Header() {
                 onClick={() => setMobileMenuOpen(true)}
                 aria-label="Open navigation menu"
                 aria-expanded={mobileMenuOpen}
-                className="p-1.5 rounded-md text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+                className="p-1.5 rounded-md text-slate-400 hover:text-white hover:bg-slate-800 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
               >
                 <Menu className="w-5 h-5" />
               </button>
@@ -209,6 +221,16 @@ export default function Header() {
       <MobileMenu
         isOpen={mobileMenuOpen}
         onClose={() => setMobileMenuOpen(false)}
+        onOpenPortal={() => {
+          setMobileMenuOpen(false)
+          setPortalModalOpen(true)
+        }}
+      />
+
+      {/* Client Portal Modal */}
+      <PortalModal
+        isOpen={portalModalOpen}
+        onClose={() => setPortalModalOpen(false)}
       />
     </>
   )

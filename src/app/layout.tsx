@@ -144,8 +144,15 @@ export default function RootLayout({
         />
       </head>
       <body className="bg-slate-950 text-slate-100 min-h-screen flex flex-col antialiased selection:bg-blue-600/30 selection:text-white">
+        {/* Accessible Skip Link */}
+        <a
+          href="#main-content"
+          className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2.5 focus:bg-blue-600 focus:text-white focus:font-medium focus:text-xs focus:rounded-lg focus:shadow-xl focus:outline-none focus:ring-2 focus:ring-white"
+        >
+          Skip to main content
+        </a>
         <Header />
-        <main id="main-content" className="flex-1">
+        <main id="main-content" className="flex-1 focus:outline-none" tabIndex={-1}>
           {children}
         </main>
         <FiverrButton />
