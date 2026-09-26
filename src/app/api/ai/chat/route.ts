@@ -3,6 +3,26 @@ import { processAIChatMessage } from '@/lib/ai/engine'
 import { saveConversation, getConversationBySession } from '@/lib/db'
 import { notifyOwners } from '@/lib/email'
 
+export const dynamic = 'force-dynamic'
+
+export async function GET(req: NextRequest) {
+  try {
+    const sessionId = req.nextUrl.searchParams.get('sessionId')
+    if (!sessionId) {
+      return NextResponse.json({ success: false, messages: [] })
+    }
+
+    const conv = await getConversationBySession(sessionId)
+    return NextResponse.json({
+      success: true,
+      messages: conv ? conv.messages : [],
+      isEscalated: conv ? conv.isEscalated : false,
+    })
+  } catch {
+    return NextResponse.json({ success: false, messages: [] })
+  }
+}
+
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json()
@@ -18,7 +38,7 @@ export async function POST(req: NextRequest) {
     const currentSessionId =
       sessionId || `ses-${Date.now().toString(36)}-${Math.random().toString(36).substring(2, 6)}`
 
-    // Process message with verified knowledge base & escalation rules
+    // Process message with revamped conversational engine
     const result = await processAIChatMessage({
       sessionId: currentSessionId,
       userMessage: message,
@@ -27,9 +47,14 @@ export async function POST(req: NextRequest) {
       conversationHistory: history,
     })
 
-    // Construct full message log for persistence
+    // Merge with any existing server messages (e.g. if admin replied in the meantime)
+    const existingConv = await getConversationBySession(currentSessionId)
+    const baseMessages = existingConv
+      ? existingConv.messages.map((m) => ({ sender: m.sender, text: m.text }))
+      : history
+
     const updatedMessages = [
-      ...history,
+      ...baseMessages,
       { sender: 'user' as const, text: message },
       { sender: 'assistant' as const, text: result.reply },
     ]
@@ -44,22 +69,21 @@ export async function POST(req: NextRequest) {
       escalationReason: result.escalationReason,
     })
 
-    // If escalation triggered, dispatch alert to BOTH owners immediately
+    // If escalation triggered, log notification for BOTH owners in the Notification Bar & Admin Console
     if (result.shouldEscalate) {
       await notifyOwners({
         type: 'ai_escalation',
-        subject: `[AI Escalation] Urgent Inquiry from ${clientName || 'Visitor'}`,
-        clientName: clientName || 'Anonymous Visitor',
-        clientEmail: clientEmail || 'Not provided',
-        priority: 'urgent',
+        subject: `[AI Assistant Inquiry] ${clientName || 'Visitor'} asked: "${message.substring(0, 50)}"`,
+        clientName: clientName || 'Website Visitor',
+        clientEmail: clientEmail || 'Pending contact info',
+        priority: 'high',
         details: {
-          'Escalation Reason': result.escalationReason || 'Automatic AI safety trigger',
-          'Client Inquiry': message,
+          'Visitor Message': message,
+          'Escalation Context': result.escalationReason || 'Direct inquiry',
           'Session ID': currentSessionId,
-          'Transcript Length': `${updatedMessages.length} messages`,
         },
         actionLink: `/admin/messages?session=${currentSessionId}`,
-        actionLabel: 'Review AI Transcript in Admin →',
+        actionLabel: 'Reply to Visitor in Admin Console →',
       })
     }
 
@@ -69,6 +93,8 @@ export async function POST(req: NextRequest) {
       reply: result.reply,
       shouldEscalate: result.shouldEscalate,
       escalationReason: result.escalationReason,
+      actions: result.actions || [],
+      followUpPrompts: result.followUpPrompts || [],
     })
   } catch (err: any) {
     console.error('[AI Chat API] Error:', err)
@@ -76,7 +102,7 @@ export async function POST(req: NextRequest) {
       {
         success: false,
         reply:
-          "I apologize, but our automated system encountered a temporary glitch. Please feel free to email our leadership directly at d.jacobwebpro@gmail.com and baronwebpro@gmail.com.",
+          "I apologize, our automated system encountered a momentary hiccup. You can click 'Human' above or reach our leadership directly at d.jacobwebpro@gmail.com and baronwebpro@gmail.com.",
       },
       { status: 500 }
     )
