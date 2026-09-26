@@ -33,10 +33,10 @@ export const metadata: Metadata = {
     'Website maintenance',
     'Custom software development',
     'TSTACK WEB',
-    'Daniel Jacob',
+    'Daniel Kylan Jacob',
   ],
   authors: [{ name: 'TSTACK WEB', url: 'https://tstackweb.com' }],
-  creator: 'Daniel Jacob',
+  creator: 'Daniel Kylan Jacob',
   publisher: 'TSTACK WEB',
   robots: {
     index: true,
@@ -84,7 +84,7 @@ export default function RootLayout({
     logo: 'https://tstackweb.com/icon.svg',
     founder: {
       '@type': 'Person',
-      name: 'Daniel Jacob',
+      name: 'Daniel Kylan Jacob',
       jobTitle: 'Founder & Lead Solutions Architect',
       image: 'https://tstackweb.com/images/founder-daniel-jacob.jpg',
     },

@@ -14,7 +14,7 @@ export default function FounderSpotlight() {
               <div className="relative w-full aspect-[4/5] rounded-lg overflow-hidden bg-slate-900">
                 <Image
                   src="/images/founder-daniel-jacob.jpg"
-                  alt="Daniel Jacob - Founder & Lead Solutions Architect of TSTACK"
+                  alt="Daniel Kylan Jacob - Founder & Lead Solutions Architect of TSTACK"
                   fill
                   className="object-cover object-center"
                   sizes="(max-width: 768px) 100vw, 40vw"
@@ -24,7 +24,7 @@ export default function FounderSpotlight() {
 
               <div className="p-4 pt-4 flex items-center justify-between">
                 <div>
-                  <h3 className="text-sm font-semibold text-white">Daniel Jacob</h3>
+                  <h3 className="text-sm font-semibold text-white">Daniel Kylan Jacob</h3>
                   <p className="text-xs text-slate-400 font-mono">Founder &amp; Lead Architect</p>
                 </div>
                 <a
@@ -52,7 +52,7 @@ export default function FounderSpotlight() {
 
             <div className="space-y-4 text-sm sm:text-base text-slate-400 leading-relaxed">
               <p>
-                Founded by software architect <strong className="text-slate-200 font-medium">Daniel Jacob</strong>, TSTACK was created with a clear mandate: to help modern companies eliminate repetitive operational bottlenecks through dependable AI automation, autonomous agents, and production-grade web systems.
+                Founded by software architect <strong className="text-slate-200 font-medium">Daniel Kylan Jacob</strong>, TSTACK was created with a clear mandate: to help modern companies eliminate repetitive operational bottlenecks through dependable AI automation, autonomous agents, and production-grade web systems.
               </p>
               <p>
                 Rather than treating software as a superficial marketing brochure, we approach every deployment as a mission-critical business asset—engineered for resilience, fast execution, and seamless integration with existing tools.

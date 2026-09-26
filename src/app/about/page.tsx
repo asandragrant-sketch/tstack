@@ -9,7 +9,7 @@ import { Target, Compass } from 'lucide-react'
 export const metadata: Metadata = {
   title: 'About TSTACK | Leadership, Engineering Standards & Mission',
   description:
-    'Learn about TSTACK: practical AI automation, autonomous agents, and custom web software founded by lead solutions architect Daniel Jacob.',
+    'Learn about TSTACK: practical AI automation, autonomous agents, and custom web software founded by lead solutions architect Daniel Kylan Jacob.',
   alternates: {
     canonical: 'https://tstackweb.com/about',
   },

@@ -19,7 +19,7 @@ const REASONS = [
     icon: Users,
     title: 'Direct Technical Access',
     description:
-      'You communicate directly with senior technical architects (David Alison & Daniel Jacob). No junior hand-offs, no account-manager layers, and no miscommunicated project requirements.',
+      'You communicate directly with senior technical architects (David Alison & Daniel Kylan Jacob). No junior hand-offs, no account-manager layers, and no miscommunicated project requirements.',
   },
   {
     icon: Lock,

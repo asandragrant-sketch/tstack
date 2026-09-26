@@ -440,7 +440,7 @@ export default function ContactForm() {
           </div>
 
           <div className="pt-3 border-t border-slate-800/80 text-center text-[11px] text-slate-500 font-mono">
-            <span>David Alison &amp; Daniel Jacob • TSTACK • 100% Confidential</span>
+            <span>David Alison &amp; Daniel Kylan Jacob • TSTACK • 100% Confidential</span>
           </div>
         </form>
       )}

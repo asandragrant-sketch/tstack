@@ -16,7 +16,7 @@ Serving clients across the **USA • UK • Spain • Selected Parts of Asia**.
   2. **AI Agents & Assistants**: Custom-trained autonomous agents for customer support, lead qualification, and internal RAG search.
   3. **Web & Business Solutions**: Production-grade Next.js web applications, client management portals, and modern business websites.
 - **Full Capabilities Directory (`/services`)**: In-depth breakdown organized into 4 categorized engineering areas with direct quote and Fiverr order triggers.
-- **Leadership & Engineering Team (`/about`)**: Featuring Founder & Lead Solutions Architect **Daniel Jacob**, alongside key engineering partners **David Alison** and **Baron**.
+- **Leadership & Engineering Team (`/about`)**: Featuring Founder & Lead Solutions Architect **Daniel Kylan Jacob**, alongside key engineering partners **David Alison** and **Baron**.
 - **Direct Fiverr Integration**: Official order actions linking directly to verified pro profile **`https://www.fiverr.com/s/bkdlzbX`** and direct gigs for **AI Automation (`https://www.fiverr.com/s/qbD3WD5`)** and **AI Agents & Web (`https://www.fiverr.com/s/432kmGk`)** with 100% milestone escrow protection.
 - **Verified Communication Channels**: Server-side API route (`/api/contact`) with validation, anti-spam honeypot, and multi-channel routing to `davidalisonwebpro@gmail.com`, `baronwebpro@gmail.com`, `b.elowenwebpro@gmail.com`, and `d.jacobwebpro@gmail.com`.
 - **Zero WhatsApp**: WhatsApp has been completely removed across the platform in favor of secure Fiverr escrow and direct verified email channels.
