@@ -1,7 +1,8 @@
 'use client'
 
 import React, { useEffect, useRef } from 'react'
-import { X, ArrowUpRight, ShieldCheck, Lock, FolderKanban, MessageSquareCode, FileText } from 'lucide-react'
+import Link from 'next/link'
+import { X, ArrowRight, ShieldCheck, Lock, FolderKanban, MessageSquareCode, FileText } from 'lucide-react'
 
 interface PortalModalProps {
   isOpen: boolean
@@ -10,7 +11,6 @@ interface PortalModalProps {
 
 export default function PortalModal({ isOpen, onClose }: PortalModalProps) {
   const modalRef = useRef<HTMLDivElement>(null)
-  const portalUrl = process.env.NEXT_PUBLIC_PORTAL_URL || 'http://localhost:3001'
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -63,7 +63,7 @@ export default function PortalModal({ isOpen, onClose }: PortalModalProps) {
             TSTACK Client Portal
           </h2>
           <p className="text-xs sm:text-sm text-slate-400 leading-relaxed">
-            The dedicated web application where active clients track project milestones, inspect code deliverables, and communicate directly with lead architects.
+            The dedicated application where clients register, track project milestones, process secure payments, and communicate directly with lead architects.
           </p>
         </div>
 
@@ -82,10 +82,10 @@ export default function PortalModal({ isOpen, onClose }: PortalModalProps) {
           <div className="p-3 rounded-lg bg-slate-950/70 border border-slate-850 space-y-1">
             <div className="flex items-center gap-1.5 font-medium text-slate-200">
               <Lock className="w-3.5 h-3.5 text-emerald-400" />
-              <span>Milestone Escrow &amp; Billing</span>
+              <span>Stripe &amp; Escrow Billing</span>
             </div>
             <p className="text-[11px] text-slate-400 leading-relaxed">
-              Funds locked in escrow until milestone deliverables are tested and approved.
+              Pay securely via Credit Card (Stripe) or verified Fiverr milestone escrow.
             </p>
           </div>
 
@@ -102,28 +102,44 @@ export default function PortalModal({ isOpen, onClose }: PortalModalProps) {
           <div className="p-3 rounded-lg bg-slate-950/70 border border-slate-850 space-y-1">
             <div className="flex items-center gap-1.5 font-medium text-slate-200">
               <FileText className="w-3.5 h-3.5 text-cyan-400" />
-              <span>Invoices &amp; SLA Documents</span>
+              <span>Invoices &amp; Support Tickets</span>
             </div>
             <p className="text-[11px] text-slate-400 leading-relaxed">
-              Instant PDF invoices, master engineering agreements, and code repository keys.
+              Open priority support requests and inspect invoices and SLA agreements.
             </p>
           </div>
         </div>
 
         {/* Action Buttons */}
         <div className="pt-2 space-y-2.5">
-          <a
-            href={portalUrl}
-            target="_blank"
-            rel="noopener noreferrer"
+          <Link
+            href="/portal"
+            onClick={onClose}
             className="w-full inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs sm:text-sm font-semibold transition-colors shadow-lg shadow-blue-600/20 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400"
           >
-            <span>Launch Client Portal WebApp</span>
-            <ArrowUpRight className="w-4 h-4" />
-          </a>
+            <span>Enter Client Portal Dashboard</span>
+            <ArrowRight className="w-4 h-4" />
+          </Link>
+
+          <div className="grid grid-cols-2 gap-2.5">
+            <Link
+              href="/portal/register"
+              onClick={onClose}
+              className="inline-flex items-center justify-center px-3 py-2 rounded-lg bg-slate-800 hover:bg-slate-750 border border-slate-700 text-xs font-medium text-slate-200 hover:text-white transition-colors"
+            >
+              Create Client Account
+            </Link>
+            <Link
+              href="/admin"
+              onClick={onClose}
+              className="inline-flex items-center justify-center px-3 py-2 rounded-lg bg-slate-950 hover:bg-slate-800 border border-slate-800 text-xs font-mono text-slate-400 hover:text-slate-200 transition-colors"
+            >
+              Owner / Admin Console
+            </Link>
+          </div>
 
           <div className="flex items-center justify-between text-[11px] text-slate-400 px-1 pt-1 font-mono">
-            <span>Authentication: Email / Password</span>
+            <span>Authentication: JWT / HTTP-Only Session</span>
             <span className="text-emerald-400 flex items-center gap-1">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
               256-bit TLS Encrypted

@@ -4,6 +4,7 @@ import './globals.css'
 import Header from '@/components/common/Header'
 import Footer from '@/components/common/Footer'
 import FiverrButton from '@/components/common/FiverrButton'
+import AIChatWidget from '@/components/ai/AIChatWidget'
 
 export const viewport: Viewport = {
   themeColor: '#070B14',
@@ -156,6 +157,7 @@ export default function RootLayout({
           {children}
         </main>
         <FiverrButton />
+        <AIChatWidget />
         <Footer />
       </body>
     </html>

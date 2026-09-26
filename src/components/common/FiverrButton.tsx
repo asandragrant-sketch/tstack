@@ -25,14 +25,14 @@ export default function FiverrButton() {
   return (
     <aside
       aria-label="Order on Fiverr"
-      className="fixed bottom-5 right-5 z-30"
+      className="fixed bottom-5 left-5 z-30"
       ref={containerRef}
       onMouseEnter={() => setIsOpen(true)}
       onMouseLeave={() => setIsOpen(false)}
     >
       {/* Popover Menu with Specific Gigs */}
       {isOpen && (
-        <div className="absolute bottom-full right-0 mb-2 w-64 rounded-lg bg-slate-900 border border-slate-800 p-2 shadow-2xl backdrop-blur-md animate-in fade-in duration-150">
+        <div className="absolute bottom-full left-0 mb-2 w-64 rounded-lg bg-slate-900 border border-slate-800 p-2 shadow-2xl backdrop-blur-md animate-in fade-in duration-150">
           <div className="px-2.5 py-1 text-[10px] font-mono text-slate-500 uppercase tracking-wider">
             Verified Gigs &amp; Escrow
           </div>

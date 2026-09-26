@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { createContactInquiry } from '@/lib/db'
+import { notifyOwners } from '@/lib/email'
 import {
-  CONTACT_EMAILS,
   FIVERR_URL,
   FIVERR_GIG_AUTOMATION_URL,
-  FIVERR_GIG_AGENTS_WEB_URL
+  FIVERR_GIG_AGENTS_WEB_URL,
 } from '@/types/contact'
 
 export async function POST(request: NextRequest) {
@@ -65,77 +66,60 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Sanitize values
-    const cleanPayload = {
-      fullName: fullName.trim(),
-      email: email.trim().toLowerCase(),
-      phone: phone ? String(phone).trim() : 'Not provided',
-      company: company ? String(company).trim() : 'Not provided',
-      service: String(service).trim(),
-      budget: String(budget).trim(),
-      message: message.trim(),
-      recipients: CONTACT_EMAILS,
-      fiverr: FIVERR_URL,
-      fiverrAutomationGig: FIVERR_GIG_AUTOMATION_URL,
-      fiverrAgentsWebGig: FIVERR_GIG_AGENTS_WEB_URL,
-      timestamp: new Date().toISOString(),
-    }
+    // 3. Persist inquiry into database
+    const newInquiry = await createContactInquiry({
+      fullName,
+      email,
+      phone,
+      company,
+      service,
+      budget,
+      message,
+    })
 
-    // Server-side audit log
-    console.log('=============================================')
-    console.log('[TSTACK WEB] NEW PROJECT INQUIRY RECEIVED:')
-    console.log('Timestamp:', cleanPayload.timestamp)
-    console.log('From:', `${cleanPayload.fullName} <${cleanPayload.email}>`)
-    console.log('Phone:', cleanPayload.phone)
-    console.log('Company:', cleanPayload.company)
-    console.log('Service:', cleanPayload.service)
-    console.log('Budget:', cleanPayload.budget)
-    console.log('Message:', cleanPayload.message)
-    console.log('Recipients:', cleanPayload.recipients)
-    console.log('Fiverr Link:', cleanPayload.fiverr)
-    console.log('=============================================')
-
-    // Optional: If Resend or Web3Forms key is configured in process.env, forward email
-    let providerDispatched = false
-    const web3formsKey = process.env.WEB3FORMS_KEY || process.env.NEXT_PUBLIC_WEB3FORMS_KEY
-    if (web3formsKey) {
-      try {
-        const res = await fetch('https://api.web3forms.com/submit', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            access_key: web3formsKey,
-            from_name: cleanPayload.fullName,
-            replyto: cleanPayload.email,
-            subject: `New TSTACK WEB Project: ${cleanPayload.service} from ${cleanPayload.fullName}`,
-            message: `Service: ${cleanPayload.service}\nBudget: ${cleanPayload.budget}\nCompany: ${cleanPayload.company}\nPhone: ${cleanPayload.phone}\n\nProject Details:\n${cleanPayload.message}`,
-          }),
-        })
-        if (res.ok) providerDispatched = true
-      } catch (err) {
-        console.error('[TSTACK WEB] External forward failed:', err)
-      }
-    }
+    // 4. Dispatch notification to BOTH owner emails (d.jacobwebpro@gmail.com & baronwebpro@gmail.com)
+    await notifyOwners({
+      type: 'contact_submission',
+      subject: `New Project Inquiry: ${service} from ${fullName}`,
+      clientName: fullName,
+      clientEmail: email,
+      priority: 'high',
+      details: {
+        'Client Name': fullName,
+        'Client Email': email,
+        Company: company || 'Not specified',
+        Phone: phone || 'Not provided',
+        'Requested Service': service,
+        'Estimated Budget': budget,
+        'Project Requirements': message,
+        'Inquiry ID': newInquiry.id,
+      },
+      actionLink: `/admin/messages?inquiryId=${newInquiry.id}`,
+      actionLabel: 'View in Admin Dashboard →',
+    })
 
     return NextResponse.json(
       {
         success: true,
+        inquiryId: newInquiry.id,
         message:
-          "Thank you. Your message has been received. We'll get back to you as soon as possible.",
+          'Thank you. Your project brief has been securely processed and dispatched to our lead solutions architects.',
         data: {
-          routedTo: cleanPayload.recipients,
-          fiverrUrl: cleanPayload.fiverr,
-          status: providerDispatched ? 'Dispatched to inbox' : 'Logged and queued for immediate review',
+          inquiryId: newInquiry.id,
+          fiverrUrl: FIVERR_URL,
+          fiverrAutomationGig: FIVERR_GIG_AUTOMATION_URL,
+          fiverrAgentsWebGig: FIVERR_GIG_AGENTS_WEB_URL,
         },
       },
       { status: 200 }
     )
   } catch (error) {
-    console.error('[TSTACK WEB] Contact API Error:', error)
+    console.error('[Contact API] Error:', error)
     return NextResponse.json(
       {
         success: false,
-        error: 'An unexpected error occurred while processing your request. Please try again or reach out on Fiverr.',
+        error:
+          'An unexpected error occurred while processing your request. Please try again or reach out on Fiverr.',
       },
       { status: 500 }
     )
