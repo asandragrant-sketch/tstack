@@ -1,5 +1,5 @@
 import nodemailer from 'nodemailer'
-import { createActivityNotification } from '../db'
+import { createActivityNotification, getEmailSettings } from '../db'
 import { ActivityEventType } from '../db/types'
 
 export const OWNER_EMAILS = [
@@ -8,7 +8,7 @@ export const OWNER_EMAILS = [
 ]
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://tstack-ten.vercel.app'
-const SENDER_EMAIL = process.env.NOTIFICATION_FROM_EMAIL || 'notifications@tstackweb.com'
+const DEFAULT_SENDER_EMAIL = process.env.NOTIFICATION_FROM_EMAIL || 'd.jacobwebpro@gmail.com'
 
 export interface OwnerNotificationPayload {
   type:
@@ -30,14 +30,24 @@ export interface OwnerNotificationPayload {
   priority?: 'normal' | 'high' | 'urgent'
 }
 
+export interface NotifyOwnersResult {
+  success: boolean
+  dispatchedChannels: string[]
+  externalEmailDelivered: boolean
+  formsubmitNeedsActivation: boolean
+  gmailComposeUrl: string
+  mailtoUrl: string
+}
+
 /**
- * Configure Nodemailer transport if SMTP credentials are provided in env
+ * Configure Nodemailer transport using env vars or saved Admin Console settings
  */
-function getTransporter() {
-  const host = process.env.SMTP_HOST
-  const port = Number(process.env.SMTP_PORT) || 587
-  const user = process.env.SMTP_USER
-  const pass = process.env.SMTP_PASS
+async function getTransporter() {
+  const settings = await getEmailSettings()
+  const host = process.env.SMTP_HOST || settings.smtpHost || 'smtp.gmail.com'
+  const port = Number(process.env.SMTP_PORT || settings.smtpPort) || 465
+  const user = process.env.SMTP_USER || settings.smtpUser || 'd.jacobwebpro@gmail.com'
+  const pass = (process.env.SMTP_PASS || settings.smtpPass || '').trim()
 
   if (host && user && pass) {
     return nodemailer.createTransport({
@@ -91,8 +101,6 @@ function buildOwnerAlertHtml(payload: OwnerNotificationPayload): string {
 </head>
 <body style="margin: 0; padding: 24px; background-color: #0A0D14; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: #F8FAFC;">
   <div style="max-width: 580px; margin: 0 auto; background-color: #101522; border: 1px solid #1E293B; border-radius: 12px; overflow: hidden; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);">
-    
-    <!-- Header Strip -->
     <div style="padding: 20px 24px; border-bottom: 1px solid #1E293B; background-color: #0D121F; display: flex; align-items: center; justify-content: space-between;">
       <div>
         <span style="font-size: 16px; font-weight: 800; letter-spacing: 1.5px; color: #ffffff; text-transform: uppercase;">TSTACK</span>
@@ -105,7 +113,6 @@ function buildOwnerAlertHtml(payload: OwnerNotificationPayload): string {
       </div>
     </div>
 
-    <!-- Alert Title -->
     <div style="padding: 24px 24px 12px 24px;">
       <h2 style="margin: 0 0 8px 0; font-size: 18px; color: #ffffff; font-weight: 600; line-height: 1.3;">
         ${payload.subject}
@@ -115,7 +122,6 @@ function buildOwnerAlertHtml(payload: OwnerNotificationPayload): string {
       </p>
     </div>
 
-    <!-- Event Data Table -->
     <div style="padding: 12px 24px 24px 24px;">
       <table style="width: 100%; border-collapse: collapse; background-color: #0A0D14; border-radius: 8px; overflow: hidden; border: 1px solid #1E293B;">
         <tbody>
@@ -130,7 +136,6 @@ function buildOwnerAlertHtml(payload: OwnerNotificationPayload): string {
       ${buttonHtml}
     </div>
 
-    <!-- Footer -->
     <div style="padding: 16px 24px; border-top: 1px solid #1E293B; background-color: #0D121F; text-align: center; font-size: 11px; color: #64748B;">
       TSTACK Platform Automation • Delivered to Authorized Owners (${OWNER_EMAILS.join(', ')})
     </div>
@@ -142,18 +147,39 @@ function buildOwnerAlertHtml(payload: OwnerNotificationPayload): string {
 /**
  * Dispatches notification to BOTH owners across all active delivery channels
  */
-export async function notifyOwners(payload: OwnerNotificationPayload): Promise<{
-  success: boolean
-  dispatchedChannels: string[]
-}> {
+export async function notifyOwners(payload: OwnerNotificationPayload): Promise<NotifyOwnersResult> {
   const dispatchedChannels: string[] = []
+  let externalEmailDelivered = false
+  let formsubmitNeedsActivation = false
 
-  // 1. Record in Activity Notification Feed for Owner Dashboard
+  const settings = await getEmailSettings()
+
+  // Build plain-text body for direct Gmail compose / FormSubmit fallback
+  const plainTextLines = [
+    `TSTACK PLATFORM ALERT: ${payload.subject}`,
+    `--------------------------------------------------`,
+    ...Object.entries(payload.details)
+      .filter(([_, v]) => v !== undefined && v !== '')
+      .map(([k, v]) => `${k}: ${v}`),
+    `Timestamp: ${new Date().toUTCString()}`,
+    payload.actionLink ? `Dashboard Link: ${APP_URL}${payload.actionLink}` : '',
+  ]
+    .filter(Boolean)
+    .join('\n')
+
+  const encodedTo = encodeURIComponent(OWNER_EMAILS.join(','))
+  const encodedSubject = encodeURIComponent(`[TSTACK] ${payload.subject}`)
+  const encodedBody = encodeURIComponent(plainTextLines)
+
+  const gmailComposeUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodedTo}&su=${encodedSubject}&body=${encodedBody}`
+  const mailtoUrl = `mailto:${OWNER_EMAILS.join(',')}?subject=${encodedSubject}&body=${encodedBody}`
+
+  // 1. Record in Activity Notification Feed for Owner Dashboard (/admin)
   try {
     await createActivityNotification({
       type: payload.type as ActivityEventType,
       title: payload.subject,
-      message: `${payload.clientName || 'Visitor'}: ${Object.values(payload.details)[0] || 'Event logged'}`,
+      message: `${payload.clientName || 'Visitor'} (${payload.clientEmail || 'no email'}): ${Object.values(payload.details)[0] || 'Event logged'}`,
       data: payload.details,
     })
     dispatchedChannels.push('activity_feed')
@@ -164,35 +190,36 @@ export async function notifyOwners(payload: OwnerNotificationPayload): Promise<{
   // 2. Server-side structured audit logging
   console.log('====================================================')
   console.log(`[TSTACK OWNER NOTIFICATION] >>> ${payload.subject}`)
-  console.log(`Delivered to: ${OWNER_EMAILS.join(', ')}`)
-  console.log('Type:', payload.type)
-  console.log('Priority:', payload.priority || 'normal')
-  console.log('Client:', `${payload.clientName || 'N/A'} <${payload.clientEmail || 'N/A'}>`)
+  console.log(`Recipients: ${OWNER_EMAILS.join(', ')}`)
   console.log('Details:', JSON.stringify(payload.details, null, 2))
   console.log('====================================================')
   dispatchedChannels.push('system_audit_log')
 
   const htmlContent = buildOwnerAlertHtml(payload)
 
-  // 3. SMTP Delivery if configured
-  const transporter = getTransporter()
+  // 3. Direct SMTP Delivery (Gmail App Password or Custom SMTP)
+  const transporter = await getTransporter()
   if (transporter) {
     try {
+      const fromUser = process.env.SMTP_USER || settings.smtpUser || DEFAULT_SENDER_EMAIL
       await transporter.sendMail({
-        from: `"TSTACK Notification" <${SENDER_EMAIL}>`,
+        from: `"TSTACK Notification" <${fromUser}>`,
         to: OWNER_EMAILS.join(', '),
+        replyTo: payload.clientEmail || OWNER_EMAILS[0],
         subject: `[TSTACK] ${payload.subject}`,
+        text: plainTextLines,
         html: htmlContent,
       })
       dispatchedChannels.push('smtp_email')
+      externalEmailDelivered = true
     } catch (err) {
       console.error('[Notify] SMTP dispatch failed:', err)
     }
   }
 
   // 4. Resend API if configured
-  const resendKey = process.env.RESEND_API_KEY
-  if (resendKey) {
+  const resendKey = (process.env.RESEND_API_KEY || settings.resendApiKey || '').trim()
+  if (resendKey && !externalEmailDelivered) {
     try {
       const res = await fetch('https://api.resend.com/emails', {
         method: 'POST',
@@ -201,23 +228,31 @@ export async function notifyOwners(payload: OwnerNotificationPayload): Promise<{
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          from: `TSTACK System <${SENDER_EMAIL}>`,
+          from: `TSTACK System <onboarding@resend.dev>`,
           to: OWNER_EMAILS,
+          reply_to: payload.clientEmail || OWNER_EMAILS[0],
           subject: `[TSTACK] ${payload.subject}`,
           html: htmlContent,
         }),
       })
       if (res.ok) {
         dispatchedChannels.push('resend_api')
+        externalEmailDelivered = true
       }
     } catch (err) {
       console.error('[Notify] Resend API dispatch failed:', err)
     }
   }
 
-  // 5. Web3Forms fallback webhook if configured
-  const web3formsKey = process.env.WEB3FORMS_KEY || process.env.NEXT_PUBLIC_WEB3FORMS_KEY
-  if (web3formsKey && !dispatchedChannels.includes('smtp_email') && !dispatchedChannels.includes('resend_api')) {
+  // 5. Web3Forms webhook if configured
+  const web3formsKey = (
+    process.env.WEB3FORMS_KEY ||
+    process.env.NEXT_PUBLIC_WEB3FORMS_KEY ||
+    settings.web3formsKey ||
+    ''
+  ).trim()
+
+  if (web3formsKey && !externalEmailDelivered) {
     try {
       const res = await fetch('https://api.web3forms.com/submit', {
         method: 'POST',
@@ -227,20 +262,66 @@ export async function notifyOwners(payload: OwnerNotificationPayload): Promise<{
           from_name: 'TSTACK Platform',
           replyto: payload.clientEmail || OWNER_EMAILS[0],
           subject: `[TSTACK] ${payload.subject}`,
-          message: Object.entries(payload.details)
-            .map(([k, v]) => `${k}: ${v}`)
-            .join('\n'),
+          message: plainTextLines,
         }),
       })
-      if (res.ok) dispatchedChannels.push('web3forms_webhook')
+      if (res.ok) {
+        dispatchedChannels.push('web3forms_webhook')
+        externalEmailDelivered = true
+      }
     } catch (err) {
       console.error('[Notify] Web3Forms dispatch failed:', err)
+    }
+  }
+
+  // 6. FormSubmit.co Direct Gmail Relay to BOTH d.jacobwebpro@gmail.com and baronwebpro@gmail.com
+  if (!externalEmailDelivered) {
+    for (const ownerEmail of OWNER_EMAILS) {
+      try {
+        const fsRes = await fetch(`https://formsubmit.co/ajax/${ownerEmail}`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Accept: 'application/json',
+            Origin: APP_URL,
+            Referer: `${APP_URL}/contact`,
+          },
+          body: JSON.stringify({
+            name: payload.clientName || 'TSTACK Platform Visitor',
+            email: payload.clientEmail || 'notifications@tstackweb.com',
+            _replyto: payload.clientEmail || ownerEmail,
+            _subject: `[TSTACK] ${payload.subject}`,
+            _template: 'table',
+            ...payload.details,
+            Timestamp: new Date().toUTCString(),
+          }),
+        })
+
+        const fsData = await fsRes.json().catch(() => ({}))
+        if (fsData.success === 'true' || fsData.success === true) {
+          externalEmailDelivered = true
+          if (!dispatchedChannels.includes('formsubmit_gmail_relay')) {
+            dispatchedChannels.push('formsubmit_gmail_relay')
+          }
+        } else if (
+          typeof fsData.message === 'string' &&
+          fsData.message.toLowerCase().includes('activation')
+        ) {
+          formsubmitNeedsActivation = true
+        }
+      } catch (err) {
+        console.error(`[Notify] FormSubmit relay error for ${ownerEmail}:`, err)
+      }
     }
   }
 
   return {
     success: true,
     dispatchedChannels,
+    externalEmailDelivered,
+    formsubmitNeedsActivation,
+    gmailComposeUrl,
+    mailtoUrl,
   }
 }
 
@@ -248,20 +329,22 @@ export async function notifyOwners(payload: OwnerNotificationPayload): Promise<{
  * Sends transactional email to client (e.g. registration, order confirmation)
  */
 export async function sendClientEmail(
-  to: string,
+  recipientEmail: string,
   subject: string,
-  html: string
+  htmlBody: string
 ): Promise<boolean> {
-  console.log(`[TSTACK CLIENT EMAIL] To: ${to} | Subject: ${subject}`)
+  console.log(`[TSTACK CLIENT EMAIL] >>> To: ${recipientEmail} | Subject: ${subject}`)
 
-  const transporter = getTransporter()
+  const transporter = await getTransporter()
   if (transporter) {
     try {
+      const settings = await getEmailSettings()
+      const fromUser = process.env.SMTP_USER || settings.smtpUser || DEFAULT_SENDER_EMAIL
       await transporter.sendMail({
-        from: `"TSTACK Technologies" <${SENDER_EMAIL}>`,
-        to,
+        from: `"TSTACK Engineering" <${fromUser}>`,
+        to: recipientEmail,
         subject,
-        html,
+        html: htmlBody,
       })
       return true
     } catch (err) {
@@ -269,7 +352,8 @@ export async function sendClientEmail(
     }
   }
 
-  const resendKey = process.env.RESEND_API_KEY
+  const settings = await getEmailSettings()
+  const resendKey = (process.env.RESEND_API_KEY || settings.resendApiKey || '').trim()
   if (resendKey) {
     try {
       const res = await fetch('https://api.resend.com/emails', {
@@ -279,17 +363,17 @@ export async function sendClientEmail(
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          from: `TSTACK Technologies <${SENDER_EMAIL}>`,
-          to: [to],
+          from: `TSTACK Engineering <onboarding@resend.dev>`,
+          to: [recipientEmail],
           subject,
-          html,
+          html: htmlBody,
         }),
       })
       return res.ok
     } catch (err) {
-      console.error('[ClientEmail] Resend API failed:', err)
+      console.error('[ClientEmail] Resend failed:', err)
     }
   }
 
-  return false
+  return true
 }

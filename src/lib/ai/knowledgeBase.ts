@@ -67,12 +67,13 @@ Every project is structured into weekly sprint milestones with transparent stagi
 • Manage account credentials and notification preferences securely.`,
   },
   {
-    topic: 'Support & Escalation Policies',
-    keywords: ['support', 'help', 'contact', 'email', 'phone', 'escalate', 'human', 'speak with someone'],
+    topic: 'Support, WhatsApp & Direct Contact Channels',
+    keywords: ['support', 'help', 'contact', 'email', 'phone', 'whatsapp', 'telegram', 'call', 'number', 'escalate', 'human', 'speak with someone', 'message'],
     content: `Clients have direct access to senior technical architects:
-• Technical inquiries & architecture: davidalisonwebpro@gmail.com
-• Lead solutions architect: d.jacobwebpro@gmail.com
-• Project delivery & operations: baronwebpro@gmail.com
-All inquiries submitted through the contact form or escalated by the AI assistant are reviewed within 24 business hours. If your question requires custom architecture review, our AI will instantly escalate it to Daniel Kylan Jacob and Baron.`,
+• Lead Solutions Architect (Daniel Kylan Jacob): d.jacobwebpro@gmail.com
+• Project Delivery & Operations (Baron): baronwebpro@gmail.com
+• Technical Solutions & AI Architecture (David Alison): davidalisonwebpro@gmail.com
+• Verified Fiverr Direct Chat: https://www.fiverr.com/s/bkdlzbX
+• WhatsApp / Private Slack: To prevent spam, our executive WhatsApp line is shared directly with active clients upon inquiry. You can leave your WhatsApp phone number or email using the "Human" escalation button above, or click "Send Direct via Gmail" to reach Daniel Kylan Jacob and Baron immediately.`,
   },
 ]

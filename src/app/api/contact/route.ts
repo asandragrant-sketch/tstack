@@ -78,7 +78,7 @@ export async function POST(request: NextRequest) {
     })
 
     // 4. Dispatch notification to BOTH owner emails (d.jacobwebpro@gmail.com & baronwebpro@gmail.com)
-    await notifyOwners({
+    const notifyResult = await notifyOwners({
       type: 'contact_submission',
       subject: `New Project Inquiry: ${service} from ${fullName}`,
       clientName: fullName,
@@ -102,6 +102,9 @@ export async function POST(request: NextRequest) {
       {
         success: true,
         inquiryId: newInquiry.id,
+        externalEmailDelivered: notifyResult.externalEmailDelivered,
+        gmailComposeUrl: notifyResult.gmailComposeUrl,
+        mailtoUrl: notifyResult.mailtoUrl,
         message:
           'Thank you. Your project brief has been securely processed and dispatched to our lead solutions architects.',
         data: {

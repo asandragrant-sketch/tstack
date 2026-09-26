@@ -146,3 +146,14 @@ export interface ActivityNotification {
   isRead: boolean
   createdAt: string
 }
+
+export interface EmailSettings {
+  smtpHost?: string
+  smtpPort?: number
+  smtpUser?: string
+  smtpPass?: string
+  resendApiKey?: string
+  web3formsKey?: string
+  updatedAt?: string
+}
+

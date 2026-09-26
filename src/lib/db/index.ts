@@ -9,6 +9,7 @@ import {
   ChatConversation,
   SupportTicket,
   ActivityNotification,
+  EmailSettings,
 } from './types'
 
 interface DatabaseSchema {
@@ -19,6 +20,7 @@ interface DatabaseSchema {
   conversations: ChatConversation[]
   tickets: SupportTicket[]
   notifications: ActivityNotification[]
+  emailSettings?: EmailSettings
 }
 
 // Persistent storage path
@@ -516,3 +518,33 @@ export async function createActivityNotification(data: {
   saveDB(db)
   return newNotification
 }
+
+// ==================== EMAIL TRANSPORT SETTINGS ====================
+
+export async function getEmailSettings(): Promise<EmailSettings> {
+  const db = loadDB()
+  return (
+    db.emailSettings || {
+      smtpHost: process.env.SMTP_HOST || 'smtp.gmail.com',
+      smtpPort: Number(process.env.SMTP_PORT) || 465,
+      smtpUser: process.env.SMTP_USER || 'd.jacobwebpro@gmail.com',
+      smtpPass: process.env.SMTP_PASS || '',
+      resendApiKey: process.env.RESEND_API_KEY || '',
+      web3formsKey: process.env.WEB3FORMS_KEY || process.env.NEXT_PUBLIC_WEB3FORMS_KEY || '',
+    }
+  )
+}
+
+export async function saveEmailSettings(settings: Partial<EmailSettings>): Promise<EmailSettings> {
+  const db = loadDB()
+  const current = await getEmailSettings()
+  const updated: EmailSettings = {
+    ...current,
+    ...settings,
+    updatedAt: new Date().toISOString(),
+  }
+  db.emailSettings = updated
+  saveDB(db)
+  return updated
+}
+

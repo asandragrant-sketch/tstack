@@ -22,7 +22,9 @@ export async function POST(req: NextRequest) {
     }
 
     const conv = await getConversationBySession(sessionId)
-    const existingMessages = conv ? conv.messages.map((m) => ({ sender: m.sender, text: m.text })) : []
+    const existingMessages = conv
+      ? conv.messages.map((m) => ({ sender: m.sender, text: m.text }))
+      : []
 
     if (extraNote) {
       existingMessages.push({
@@ -37,11 +39,17 @@ export async function POST(req: NextRequest) {
       clientEmail,
       messages: existingMessages,
       isEscalated: true,
-      escalationReason: reason || 'Client requested direct contact with Daniel Kylan Jacob or Baron',
+      escalationReason:
+        reason || 'Client requested direct contact with Daniel Kylan Jacob or Baron',
     })
 
+    const transcriptText = existingMessages
+      .slice(-6)
+      .map((m) => `[${m.sender.toUpperCase()}]: ${m.text}`)
+      .join(' | ')
+
     // Dispatch urgent notification to BOTH owners: d.jacobwebpro@gmail.com and baronwebpro@gmail.com
-    await notifyOwners({
+    const notifyResult = await notifyOwners({
       type: 'ai_escalation',
       subject: `[HUMAN ESCALATION] ${clientName || 'Client'} (${clientEmail}) requested direct architect assistance`,
       clientName: clientName || 'Client',
@@ -52,8 +60,8 @@ export async function POST(req: NextRequest) {
         'Client Email': clientEmail,
         'Escalation Reason': reason || 'Client requested direct assistance',
         'Client Note': extraNote || 'No additional note provided',
+        'Recent Transcript': transcriptText || 'Direct escalation',
         'Session ID': sessionId,
-        'Prior Messages Count': String(existingMessages.length),
       },
       actionLink: `/admin/messages?session=${sessionId}`,
       actionLabel: 'Open Conversation in Dashboard →',
@@ -62,7 +70,12 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({
       success: true,
       message:
-        'Your inquiry has been escalated directly to Daniel Kylan Jacob and Baron. You will receive a response at your email within 2–4 business hours.',
+        'Your inquiry has been logged in the Owner Dashboard and dispatched to Daniel Kylan Jacob (d.jacobwebpro@gmail.com) and Baron (baronwebpro@gmail.com).',
+      externalEmailDelivered: notifyResult.externalEmailDelivered,
+      formsubmitNeedsActivation: notifyResult.formsubmitNeedsActivation,
+      gmailComposeUrl: notifyResult.gmailComposeUrl,
+      mailtoUrl: notifyResult.mailtoUrl,
+      dispatchedChannels: notifyResult.dispatchedChannels,
     })
   } catch (err: any) {
     console.error('[AI Escalate API] Error:', err)

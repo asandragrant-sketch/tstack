@@ -28,7 +28,7 @@ export default function AdminOwnerConsolePage() {
   const [loginError, setLoginError] = useState('')
 
   const [activeSection, setActiveSection] = useState<
-    'overview' | 'orders' | 'conversations' | 'inquiries' | 'clients'
+    'overview' | 'orders' | 'conversations' | 'inquiries' | 'clients' | 'email-setup'
   >('overview')
 
   const [stats, setStats] = useState<any>(null)
@@ -39,6 +39,15 @@ export default function AdminOwnerConsolePage() {
   const [notifications, setNotifications] = useState<any[]>([])
   const [clients, setClients] = useState<any[]>([])
   const [refreshing, setRefreshing] = useState(false)
+
+  // Email configuration state
+  const [smtpUser, setSmtpUser] = useState('d.jacobwebpro@gmail.com')
+  const [smtpPass, setSmtpPass] = useState('')
+  const [resendApiKey, setResendApiKey] = useState('')
+  const [web3formsKey, setWeb3formsKey] = useState('')
+  const [emailConfigStatus, setEmailConfigStatus] = useState<any>(null)
+  const [emailTestMessage, setEmailTestMessage] = useState('')
+  const [emailTesting, setEmailTesting] = useState(false)
 
   useEffect(() => {
     verifyAdminSession()
@@ -90,16 +99,18 @@ export default function AdminOwnerConsolePage() {
   const fetchAllAdminTelemetry = async () => {
     setRefreshing(true)
     try {
-      const [statsRes, clientsRes, convRes, ordersRes] = await Promise.all([
+      const [statsRes, clientsRes, convRes, ordersRes, emailSetRes] = await Promise.all([
         fetch('/api/admin/stats'),
         fetch('/api/admin/clients'),
         fetch('/api/admin/conversations'),
         fetch('/api/orders'),
+        fetch('/api/admin/email-settings'),
       ])
       const statsData = await statsRes.json()
       const clientsData = await clientsRes.json()
       const convData = await convRes.json()
       const ordersData = await ordersRes.json()
+      const emailSetData = await emailSetRes.json()
 
       if (statsData.success) {
         setStats(statsData.stats)
@@ -110,10 +121,68 @@ export default function AdminOwnerConsolePage() {
       if (clientsData.success) setClients(clientsData.clients || [])
       if (convData.success) setConversations(convData.conversations || [])
       if (ordersData.success) setOrders(ordersData.orders || [])
+      if (emailSetData.success) {
+        setEmailConfigStatus(emailSetData.settings)
+        if (emailSetData.settings?.smtpUser) setSmtpUser(emailSetData.settings.smtpUser)
+      }
     } catch (err) {
       console.error('Failed to load admin telemetry:', err)
     } finally {
       setRefreshing(false)
+    }
+  }
+
+  const handleSaveEmailSettings = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setEmailTestMessage('Saving email credentials...')
+    try {
+      const res = await fetch('/api/admin/email-settings', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          smtpUser,
+          smtpPass,
+          resendApiKey,
+          web3formsKey,
+        }),
+      })
+      const data = await res.json()
+      if (res.ok && data.success) {
+        setEmailTestMessage('Credentials saved! Now sending live verification test to d.jacobwebpro@gmail.com & baronwebpro@gmail.com...')
+        await handleTestEmailDelivery()
+      } else {
+        setEmailTestMessage(data.error || 'Failed to save credentials.')
+      }
+    } catch {
+      setEmailTestMessage('Network error saving email settings.')
+    }
+  }
+
+  const handleTestEmailDelivery = async () => {
+    setEmailTesting(true)
+    try {
+      const res = await fetch('/api/admin/email-settings', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'test_delivery' }),
+      })
+      const data = await res.json()
+      if (data.result?.externalEmailDelivered) {
+        setEmailTestMessage(
+          `SUCCESS! Live email delivered to d.jacobwebpro@gmail.com & baronwebpro@gmail.com via [${data.result.dispatchedChannels.join(', ')}].`
+        )
+      } else if (data.result?.formsubmitNeedsActivation) {
+        setEmailTestMessage(
+          `ACTION REQUIRED IN GMAIL: FormSubmit just sent an "Activate Form" email to d.jacobwebpro@gmail.com and baronwebpro@gmail.com (check Inbox & Spam). Click "Activate Form" in that email OR enter a 16-digit Gmail App Password below!`
+        )
+      } else {
+        setEmailTestMessage(
+          `Dispatched via [${data.result?.dispatchedChannels?.join(', ')}]. Add a Gmail App Password or Resend API Key below for instant SMTP delivery.`
+        )
+      }
+      await fetchAllAdminTelemetry()
+    } finally {
+      setEmailTesting(false)
     }
   }
 
@@ -326,6 +395,7 @@ export default function AdminOwnerConsolePage() {
         <div className="flex items-center gap-2 border-b border-slate-800 pb-3 overflow-x-auto">
           {[
             { id: 'overview', label: `Activity & Dispatch Log (${notifications.length})` },
+            { id: 'email-setup', label: `⚡ Gmail & Email Setup` },
             { id: 'orders', label: `Orders & Milestones (${orders.length})` },
             { id: 'conversations', label: `AI Support Transcripts (${conversations.length})` },
             { id: 'inquiries', label: `Inquiries & Tickets (${inquiries.length + tickets.length})` },
@@ -345,6 +415,129 @@ export default function AdminOwnerConsolePage() {
             </button>
           ))}
         </div>
+
+        {/* SECTION: GMAIL & EMAIL DELIVERY SETUP */}
+        {activeSection === 'email-setup' && (
+          <div className="pro-card p-6 sm:p-8 border border-slate-800 space-y-6">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800 pb-4">
+              <div className="space-y-1">
+                <h2 className="text-lg font-bold text-white">
+                  Gmail &amp; Dual-Owner Notification Transport
+                </h2>
+                <p className="text-xs text-slate-400">
+                  Target Inboxes: <strong>d.jacobwebpro@gmail.com</strong> &amp;{' '}
+                  <strong>baronwebpro@gmail.com</strong>
+                </p>
+              </div>
+              <button
+                type="button"
+                disabled={emailTesting}
+                onClick={handleTestEmailDelivery}
+                className="px-4 py-2.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 text-white text-xs font-semibold transition-colors shadow-md"
+              >
+                {emailTesting ? 'Sending Live Test...' : 'Send Live Test Email to Both Gmails →'}
+              </button>
+            </div>
+
+            {emailTestMessage && (
+              <div className="p-4 rounded-xl bg-blue-950/50 border border-blue-500/40 text-xs text-blue-200 leading-relaxed">
+                {emailTestMessage}
+              </div>
+            )}
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Method 1: Zero-Key FormSubmit Activation */}
+              <div className="p-5 rounded-xl bg-slate-950 border border-slate-800 space-y-3">
+                <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded text-[10px] font-mono bg-amber-950/60 border border-amber-500/30 text-amber-400">
+                  OPTION 1: ZERO-KEY GMAIL RELAY (FORMSUBMIT)
+                </div>
+                <h3 className="text-sm font-bold text-white">
+                  One-Click Inbox Activation
+                </h3>
+                <p className="text-xs text-slate-300 leading-relaxed">
+                  Our backend automatically dispatches every AI escalation, contact inquiry, registration, and order to{' '}
+                  <strong>https://formsubmit.co/ajax/d.jacobwebpro@gmail.com</strong> and{' '}
+                  <strong>https://formsubmit.co/ajax/baronwebpro@gmail.com</strong>.
+                </p>
+                <ol className="list-decimal list-inside text-xs text-slate-400 space-y-1.5">
+                  <li>
+                    Open your Gmail (<strong>d.jacobwebpro@gmail.com</strong> and{' '}
+                    <strong>baronwebpro@gmail.com</strong>) and check both <strong>Inbox</strong> and{' '}
+                    <strong>Spam/Promotions</strong>.
+                  </li>
+                  <li>
+                    Look for the email from <strong>FormSubmit</strong> with subject{' '}
+                    <em>&quot;Action Required: Activate FormSubmit&quot;</em>.
+                  </li>
+                  <li>
+                    Click the green <strong>&quot;Activate Form&quot;</strong> button once. Every future website alert will land directly in your Gmail inbox!
+                  </li>
+                </ol>
+              </div>
+
+              {/* Method 2: Direct Gmail App Password / Resend API */}
+              <form onSubmit={handleSaveEmailSettings} className="p-5 rounded-xl bg-slate-950 border border-slate-800 space-y-3.5">
+                <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded text-[10px] font-mono bg-blue-950/60 border border-blue-500/30 text-blue-400">
+                  OPTION 2: DIRECT GMAIL SMTP / RESEND API
+                </div>
+                <h3 className="text-sm font-bold text-white">
+                  Instant Direct SMTP (No Activation Email Needed)
+                </h3>
+
+                <div>
+                  <label className="block text-[11px] font-medium text-slate-300 mb-1">
+                    Gmail Sender Address
+                  </label>
+                  <input
+                    type="email"
+                    value={smtpUser}
+                    onChange={(e) => setSmtpUser(e.target.value)}
+                    className="w-full px-3 py-2 rounded-lg bg-slate-900 border border-slate-800 text-white text-xs font-mono"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-[11px] font-medium text-slate-300 mb-1">
+                    16-Character Google App Password (myaccount.google.com/apppasswords)
+                  </label>
+                  <input
+                    type="password"
+                    value={smtpPass}
+                    onChange={(e) => setSmtpPass(e.target.value)}
+                    placeholder={
+                      emailConfigStatus?.hasSmtpPass
+                        ? '•••••••••••••••• (Saved)'
+                        : 'xxxx xxxx xxxx xxxx'
+                    }
+                    className="w-full px-3 py-2 rounded-lg bg-slate-900 border border-slate-800 text-white text-xs font-mono"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-[11px] font-medium text-slate-300 mb-1">
+                    Or Resend API Key (Optional: re_...)
+                  </label>
+                  <input
+                    type="password"
+                    value={resendApiKey}
+                    onChange={(e) => setResendApiKey(e.target.value)}
+                    placeholder={
+                      emailConfigStatus?.hasResendKey ? 're_•••••••••••• (Saved)' : 're_123456789...'
+                    }
+                    className="w-full px-3 py-2 rounded-lg bg-slate-900 border border-slate-800 text-white text-xs font-mono"
+                  />
+                </div>
+
+                <button
+                  type="submit"
+                  className="w-full py-2.5 px-4 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold transition-colors"
+                >
+                  Save Credentials &amp; Send Test Email →
+                </button>
+              </form>
+            </div>
+          </div>
+        )}
 
         {/* SECTION 1: ACTIVITY & EMAIL DISPATCH FEED */}
         {activeSection === 'overview' && (

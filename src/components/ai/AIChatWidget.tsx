@@ -11,6 +11,8 @@ import {
   AlertTriangle,
   ChevronDown,
   ShieldCheck,
+  Mail,
+  ArrowUpRight,
 } from 'lucide-react'
 
 interface ChatMsg {
@@ -21,8 +23,8 @@ interface ChatMsg {
 
 const QUICK_PROMPTS = [
   'What services does TSTACK offer?',
+  'Do you have WhatsApp or direct email?',
   'How does payment & Fiverr escrow work?',
-  'What are typical delivery timelines?',
   'Speak with Daniel Kylan Jacob',
 ]
 
@@ -43,11 +45,13 @@ export default function AIChatWidget() {
   const [escalationNote, setEscalationNote] = useState('')
   const [escalationStatus, setEscalationStatus] = useState<'idle' | 'submitting' | 'sent' | 'error'>('idle')
   const [escalationError, setEscalationError] = useState('')
+  const [gmailComposeUrl, setGmailComposeUrl] = useState('')
+  const [mailtoUrl, setMailtoUrl] = useState('')
+  const [externalDelivered, setExternalDelivered] = useState(false)
 
   const messagesEndRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    // Initialize or restore session ID
     const savedSession = localStorage.getItem('tstack_chat_session_id')
     if (savedSession) {
       setSessionId(savedSession)
@@ -140,17 +144,22 @@ export default function AIChatWidget() {
 
       if (res.ok && data.success) {
         setEscalationStatus('sent')
+        setGmailComposeUrl(data.gmailComposeUrl || '')
+        setMailtoUrl(data.mailtoUrl || '')
+        setExternalDelivered(Boolean(data.externalEmailDelivered))
+
         setMessages((prev) => [
           ...prev,
           {
             sender: 'system',
-            text: `Escalation confirmed! Your conversation transcript and contact details (${escalationEmail}) have been delivered to Daniel Kylan Jacob (d.jacobwebpro@gmail.com) and Baron (baronwebpro@gmail.com).`,
+            text: `Escalation logged in Owner Console (/admin) and dispatched to d.jacobwebpro@gmail.com & baronwebpro@gmail.com.`,
           },
         ])
-        setTimeout(() => {
-          setShowEscalationModal(false)
-          setEscalationStatus('idle')
-        }, 2200)
+
+        // If external SMTP/FormSubmit hasn't been activated yet in Gmail, automatically open direct Gmail compose window so the owner receives it immediately
+        if (!data.externalEmailDelivered && data.gmailComposeUrl) {
+          window.open(data.gmailComposeUrl, '_blank', 'noopener,noreferrer')
+        }
       } else {
         setEscalationStatus('error')
         setEscalationError(data.error || 'Failed to escalate.')
@@ -165,7 +174,7 @@ export default function AIChatWidget() {
     <div className="fixed bottom-5 right-5 z-50 font-sans">
       {/* Chat Window */}
       {isOpen && (
-        <div className="mb-3 w-[350px] sm:w-[395px] h-[540px] max-h-[82vh] bg-slate-950 border border-slate-800 rounded-2xl shadow-2xl flex flex-col overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-200">
+        <div className="mb-3 w-[350px] sm:w-[405px] h-[560px] max-h-[84vh] bg-slate-950 border border-slate-800 rounded-2xl shadow-2xl flex flex-col overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-200">
           {/* Header */}
           <div className="p-4 bg-slate-900/95 border-b border-slate-800 flex items-center justify-between">
             <div className="flex items-center gap-2.5">
@@ -180,14 +189,17 @@ export default function AIChatWidget() {
                   <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
                 </div>
                 <p className="text-[10px] text-slate-400 font-mono">
-                  Grounded Knowledge • Live Architect Escalation
+                  Grounded Knowledge • Direct Gmail Escalation
                 </p>
               </div>
             </div>
             <div className="flex items-center gap-1">
               <button
                 type="button"
-                onClick={() => setShowEscalationModal(!showEscalationModal)}
+                onClick={() => {
+                  setShowEscalationModal(!showEscalationModal)
+                  setEscalationStatus('idle')
+                }}
                 title="Escalate to Human Architect"
                 className="px-2 py-1 rounded bg-slate-800 hover:bg-blue-600/20 border border-slate-700 hover:border-blue-500/40 text-[10px] font-mono text-slate-300 hover:text-blue-300 transition-colors flex items-center gap-1"
               >
@@ -216,29 +228,83 @@ export default function AIChatWidget() {
                   </div>
                   <button
                     type="button"
-                    onClick={() => setShowEscalationModal(false)}
+                    onClick={() => {
+                      setShowEscalationModal(false)
+                      setEscalationStatus('idle')
+                    }}
                     className="text-xs text-slate-400 hover:text-white"
                   >
                     ← Back to Chat
                   </button>
                 </div>
 
-                <p className="text-xs text-slate-300 leading-relaxed">
-                  Your conversation history and inquiry will be dispatched immediately to{' '}
-                  <strong className="text-white">Daniel Kylan Jacob</strong> and{' '}
-                  <strong className="text-white">Baron</strong> for personal follow-up.
-                </p>
-
                 {escalationStatus === 'sent' ? (
-                  <div className="p-4 rounded-xl bg-emerald-950/50 border border-emerald-500/40 text-center space-y-2 my-4">
-                    <CheckCircle2 className="w-7 h-7 text-emerald-400 mx-auto" />
-                    <h4 className="text-sm font-semibold text-white">Escalation Dispatched</h4>
-                    <p className="text-xs text-slate-300">
-                      Both owners have been notified. We will respond to your email shortly.
+                  <div className="p-4 rounded-xl bg-slate-900 border border-emerald-500/40 space-y-3.5 my-2">
+                    <div className="flex items-center gap-2 text-emerald-400">
+                      <CheckCircle2 className="w-5 h-5 shrink-0" />
+                      <h4 className="text-sm font-semibold text-white">
+                        Logged in Admin &amp; Dispatched to Gmail
+                      </h4>
+                    </div>
+
+                    <p className="text-xs text-slate-300 leading-relaxed">
+                      1. Your full conversation is now saved in the{' '}
+                      <strong className="text-white">Owner Console (/admin)</strong>.
+                      <br />
+                      2. Automatic Gmail relay to{' '}
+                      <strong className="text-white">d.jacobwebpro@gmail.com</strong> &amp;{' '}
+                      <strong className="text-white">baronwebpro@gmail.com</strong> has been triggered.
                     </p>
+
+                    {!externalDelivered && (
+                      <div className="p-2.5 rounded-lg bg-amber-950/50 border border-amber-500/40 text-[11px] text-amber-200 leading-relaxed">
+                        <strong>Owner Note:</strong> Check your Gmail Inbox or Spam folder for the one-time{' '}
+                        <strong>&quot;Activate FormSubmit&quot;</strong> button (or add a Gmail App Password in{' '}
+                        <code>/admin</code>) so future alerts land automatically without clicking Send!
+                      </div>
+                    )}
+
+                    <div className="space-y-2 pt-1">
+                      {gmailComposeUrl && (
+                        <a
+                          href={gmailComposeUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="w-full py-2.5 px-3 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold flex items-center justify-center gap-1.5 shadow-md"
+                        >
+                          <Mail className="w-3.5 h-3.5" />
+                          <span>Send Direct Copy via Gmail Now</span>
+                          <ArrowUpRight className="w-3.5 h-3.5" />
+                        </a>
+                      )}
+                      {mailtoUrl && (
+                        <a
+                          href={mailtoUrl}
+                          className="w-full py-2 px-3 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-medium flex items-center justify-center gap-1.5"
+                        >
+                          <span>Open in Default Email App</span>
+                        </a>
+                      )}
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setShowEscalationModal(false)
+                          setEscalationStatus('idle')
+                        }}
+                        className="w-full py-2 text-xs text-slate-400 hover:text-white"
+                      >
+                        Return to AI Chat
+                      </button>
+                    </div>
                   </div>
                 ) : (
                   <form onSubmit={handleEscalateSubmit} className="space-y-3">
+                    <p className="text-xs text-slate-300 leading-relaxed">
+                      Your conversation history and contact info will be sent directly to{' '}
+                      <strong className="text-white">Daniel Kylan Jacob</strong> (d.jacobwebpro@gmail.com) and{' '}
+                      <strong className="text-white">Baron</strong> (baronwebpro@gmail.com).
+                    </p>
+
                     {escalationError && (
                       <div className="p-2.5 rounded-lg bg-red-950/50 border border-red-500/40 text-red-300 text-[11px] flex items-center gap-2">
                         <AlertTriangle className="w-3.5 h-3.5 shrink-0 text-red-400" />
@@ -260,7 +326,7 @@ export default function AIChatWidget() {
                     </div>
                     <div>
                       <label className="block text-[11px] font-medium text-slate-300 mb-1">
-                        Your Business Email <span className="text-blue-400">*</span>
+                        Your Email or WhatsApp Info <span className="text-blue-400">*</span>
                       </label>
                       <input
                         type="email"
@@ -273,13 +339,13 @@ export default function AIChatWidget() {
                     </div>
                     <div>
                       <label className="block text-[11px] font-medium text-slate-300 mb-1">
-                        Specific Question or Project Context
+                        WhatsApp Number / Specific Question
                       </label>
                       <textarea
                         rows={3}
                         value={escalationNote}
                         onChange={(e) => setEscalationNote(e.target.value)}
-                        placeholder="Any specific details for Daniel Kylan Jacob & Baron..."
+                        placeholder="Include your WhatsApp number or project question for Daniel Kylan Jacob & Baron..."
                         className="w-full px-3 py-2 rounded-lg bg-slate-900 border border-slate-800 text-white text-xs focus:outline-none focus:border-blue-500"
                       />
                     </div>
@@ -299,7 +365,7 @@ export default function AIChatWidget() {
               <div className="pt-3 border-t border-slate-900 flex items-center justify-between text-[10px] text-slate-500 font-mono">
                 <span className="flex items-center gap-1">
                   <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
-                  Delivered to d.jacobwebpro &amp; baronwebpro
+                  Recipients: d.jacobwebpro &amp; baronwebpro
                 </span>
               </div>
             </div>
@@ -377,7 +443,7 @@ export default function AIChatWidget() {
                   type="text"
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
-                  placeholder="Ask about services, timelines, escrow..."
+                  placeholder="Ask about WhatsApp, services, escrow..."
                   className="flex-1 bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-blue-500"
                 />
                 <button

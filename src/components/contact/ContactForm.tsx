@@ -52,6 +52,7 @@ export default function ContactForm() {
   const [errorMessage, setErrorMessage] = useState('')
   const [clientErrors, setClientErrors] = useState<Record<string, string>>({})
   const [copiedEmail, setCopiedEmail] = useState<string | null>(null)
+  const [gmailComposeUrl, setGmailComposeUrl] = useState('')
 
   const copyEmailToClipboard = (email: string) => {
     if (navigator.clipboard) {
@@ -119,6 +120,12 @@ export default function ContactForm() {
 
       if (response.ok && result.success) {
         setStatus('success')
+        if (result.gmailComposeUrl) {
+          setGmailComposeUrl(result.gmailComposeUrl)
+          if (!result.externalEmailDelivered) {
+            window.open(result.gmailComposeUrl, '_blank', 'noopener,noreferrer')
+          }
+        }
         setFormData({
           fullName: '',
           email: '',
@@ -169,8 +176,21 @@ export default function ContactForm() {
               Inquiry Successfully Received
             </h3>
             <p className="text-xs sm:text-sm text-slate-400 max-w-md mx-auto leading-relaxed">
-              Thank you. Your message has been received by our engineering team. We will review your requirements and respond within 24 business hours.
+              Thank you. Your message has been logged in the Owner Console and dispatched to <strong>d.jacobwebpro@gmail.com</strong> &amp; <strong>baronwebpro@gmail.com</strong>.
             </p>
+            {gmailComposeUrl && (
+              <div className="pt-2">
+                <a
+                  href={gmailComposeUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center justify-center gap-1.5 py-2.5 px-4 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold shadow-md transition-colors"
+                >
+                  <span>Send Direct Copy via Gmail Now</span>
+                  <ArrowUpRight className="w-3.5 h-3.5" />
+                </a>
+              </div>
+            )}
           </div>
 
           {/* Option to Order Directly via Fiverr with Escrow */}
