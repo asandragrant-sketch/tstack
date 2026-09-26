@@ -142,6 +142,11 @@ export interface ActivityNotification {
   type: ActivityEventType
   title: string
   message: string
+  recipientRole?: 'admin' | 'client'
+  recipientUserId?: string
+  recipientEmail?: string
+  sessionId?: string
+  actionLink?: string
   data?: Record<string, any>
   isRead: boolean
   createdAt: string

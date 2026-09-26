@@ -7,6 +7,7 @@ import { Menu, ArrowUpRight, ChevronDown } from 'lucide-react'
 import Logo from './Logo'
 import MobileMenu from './MobileMenu'
 import PortalModal from './PortalModal'
+import { NotificationBell } from './NotificationBar'
 import {
   FIVERR_URL,
   FIVERR_GIG_AUTOMATION_URL,
@@ -176,6 +177,8 @@ export default function Header() {
                 )}
               </div>
 
+              <NotificationBell />
+
               <button
                 type="button"
                 onClick={() => setPortalModalOpen(true)}
@@ -196,6 +199,7 @@ export default function Header() {
 
             {/* Mobile Menu Trigger */}
             <div className="flex md:hidden items-center gap-2">
+              <NotificationBell />
               <a
                 href={FIVERR_URL}
                 target="_blank"

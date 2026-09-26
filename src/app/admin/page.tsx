@@ -49,6 +49,53 @@ export default function AdminOwnerConsolePage() {
   const [emailTestMessage, setEmailTestMessage] = useState('')
   const [emailTesting, setEmailTesting] = useState(false)
 
+  // Direct reply to client state
+  const [replyInputs, setReplyInputs] = useState<Record<string, string>>({})
+  const [replyStatus, setReplyStatus] = useState<Record<string, string>>({})
+
+  const handleSendClientReply = async (params: {
+    key: string
+    recipientEmail?: string
+    recipientUserId?: string
+    sessionId?: string
+    ticketId?: string
+    clientName?: string
+    subject: string
+  }) => {
+    const text = (replyInputs[params.key] || '').trim()
+    if (!text) return
+
+    setReplyStatus((prev) => ({ ...prev, [params.key]: 'Sending...' }))
+    try {
+      const res = await fetch('/api/notifications', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          recipientEmail: params.recipientEmail,
+          recipientUserId: params.recipientUserId,
+          sessionId: params.sessionId,
+          ticketId: params.ticketId,
+          clientName: params.clientName,
+          subject: params.subject,
+          message: text,
+        }),
+      })
+      const data = await res.json()
+      if (res.ok && data.success) {
+        setReplyInputs((prev) => ({ ...prev, [params.key]: '' }))
+        setReplyStatus((prev) => ({
+          ...prev,
+          [params.key]: '✓ Sent to Client Notification Bar & Email!',
+        }))
+        await fetchAllAdminTelemetry()
+      } else {
+        setReplyStatus((prev) => ({ ...prev, [params.key]: 'Failed to send' }))
+      }
+    } catch {
+      setReplyStatus((prev) => ({ ...prev, [params.key]: 'Network error' }))
+    }
+  }
+
   useEffect(() => {
     verifyAdminSession()
   }, [])
@@ -700,6 +747,40 @@ export default function AdminOwnerConsolePage() {
                       </div>
                     ))}
                   </div>
+
+                  {/* Direct Reply to Client Notification Bar & Chat */}
+                  <div className="pt-2 flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+                    <input
+                      type="text"
+                      value={replyInputs[c.id] || ''}
+                      onChange={(e) =>
+                        setReplyInputs((prev) => ({ ...prev, [c.id]: e.target.value }))
+                      }
+                      placeholder="Type a direct reply (appears in Client Notification Bar & Email)..."
+                      className="flex-1 px-3 py-2 rounded-lg bg-slate-950 border border-slate-800 text-xs text-white focus:outline-none focus:border-blue-500"
+                    />
+                    <button
+                      type="button"
+                      onClick={() =>
+                        handleSendClientReply({
+                          key: c.id,
+                          sessionId: c.sessionId,
+                          recipientEmail: c.clientEmail,
+                          recipientUserId: c.userId,
+                          clientName: c.clientName,
+                          subject: `Reply from Daniel Kylan Jacob & TSTACK Team`,
+                        })
+                      }
+                      className="px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold shrink-0"
+                    >
+                      Send Reply to Client →
+                    </button>
+                  </div>
+                  {replyStatus[c.id] && (
+                    <div className="text-[11px] font-mono text-emerald-400">
+                      {replyStatus[c.id]}
+                    </div>
+                  )}
                 </div>
               ))
             )}
@@ -716,7 +797,7 @@ export default function AdminOwnerConsolePage() {
               {inquiries.map((inq) => (
                 <div
                   key={inq.id}
-                  className="p-3.5 rounded-lg bg-slate-950 border border-slate-800 space-y-1.5 text-xs"
+                  className="p-3.5 rounded-lg bg-slate-950 border border-slate-800 space-y-2 text-xs"
                 >
                   <div className="flex items-center justify-between">
                     <span className="font-semibold text-white">{inq.fullName}</span>
@@ -724,6 +805,36 @@ export default function AdminOwnerConsolePage() {
                   </div>
                   <div className="text-slate-400 font-mono">{inq.email} • {inq.service}</div>
                   <p className="text-slate-300 pt-1">{inq.message}</p>
+                  <div className="pt-2 flex items-center gap-2">
+                    <input
+                      type="text"
+                      value={replyInputs[inq.id] || ''}
+                      onChange={(e) =>
+                        setReplyInputs((prev) => ({ ...prev, [inq.id]: e.target.value }))
+                      }
+                      placeholder={`Reply to ${inq.fullName}...`}
+                      className="flex-1 px-2.5 py-1.5 rounded bg-slate-900 border border-slate-800 text-xs text-white"
+                    />
+                    <button
+                      type="button"
+                      onClick={() =>
+                        handleSendClientReply({
+                          key: inq.id,
+                          recipientEmail: inq.email,
+                          clientName: inq.fullName,
+                          subject: `Re: ${inq.service} Inquiry — TSTACK`,
+                        })
+                      }
+                      className="px-3 py-1.5 rounded bg-blue-600 hover:bg-blue-500 text-white text-[11px] font-semibold"
+                    >
+                      Reply
+                    </button>
+                  </div>
+                  {replyStatus[inq.id] && (
+                    <div className="text-[10px] font-mono text-emerald-400">
+                      {replyStatus[inq.id]}
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
@@ -735,7 +846,7 @@ export default function AdminOwnerConsolePage() {
               {tickets.map((t) => (
                 <div
                   key={t.id}
-                  className="p-3.5 rounded-lg bg-slate-950 border border-slate-800 space-y-1.5 text-xs"
+                  className="p-3.5 rounded-lg bg-slate-950 border border-slate-800 space-y-2 text-xs"
                 >
                   <div className="flex items-center justify-between">
                     <span className="font-mono font-bold text-blue-400">{t.ticketNumber}</span>
@@ -746,6 +857,38 @@ export default function AdminOwnerConsolePage() {
                   <div className="font-semibold text-white">{t.subject}</div>
                   <div className="text-slate-400 font-mono">{t.clientName} ({t.clientEmail})</div>
                   <p className="text-slate-300">{t.messages?.[0]?.message}</p>
+                  <div className="pt-2 flex items-center gap-2">
+                    <input
+                      type="text"
+                      value={replyInputs[t.id] || ''}
+                      onChange={(e) =>
+                        setReplyInputs((prev) => ({ ...prev, [t.id]: e.target.value }))
+                      }
+                      placeholder={`Reply to ticket ${t.ticketNumber}...`}
+                      className="flex-1 px-2.5 py-1.5 rounded bg-slate-900 border border-slate-800 text-xs text-white"
+                    />
+                    <button
+                      type="button"
+                      onClick={() =>
+                        handleSendClientReply({
+                          key: t.id,
+                          ticketId: t.id,
+                          recipientUserId: t.userId,
+                          recipientEmail: t.clientEmail,
+                          clientName: t.clientName,
+                          subject: `Ticket ${t.ticketNumber} Reply: ${t.subject}`,
+                        })
+                      }
+                      className="px-3 py-1.5 rounded bg-blue-600 hover:bg-blue-500 text-white text-[11px] font-semibold"
+                    >
+                      Reply
+                    </button>
+                  </div>
+                  {replyStatus[t.id] && (
+                    <div className="text-[10px] font-mono text-emerald-400">
+                      {replyStatus[t.id]}
+                    </div>
+                  )}
                 </div>
               ))}
             </div>

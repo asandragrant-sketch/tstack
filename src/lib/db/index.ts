@@ -486,9 +486,36 @@ export async function createSupportTicket(data: {
 
 // ==================== ACTIVITY NOTIFICATIONS ====================
 
-export async function getActivityNotifications(): Promise<ActivityNotification[]> {
+export async function getActivityNotifications(filter?: {
+  role?: 'admin' | 'client'
+  userId?: string
+  email?: string
+  sessionId?: string
+}): Promise<ActivityNotification[]> {
   const db = loadDB()
-  return [...db.notifications].sort(
+  let list = db.notifications
+
+  if (filter) {
+    if (filter.role === 'admin') {
+      list = list.filter((n) => !n.recipientRole || n.recipientRole === 'admin')
+    } else if (filter.role === 'client') {
+      list = list.filter(
+        (n) =>
+          n.recipientRole === 'client' &&
+          ((filter.userId && n.recipientUserId === filter.userId) ||
+            (filter.email &&
+              n.recipientEmail &&
+              n.recipientEmail.toLowerCase() === filter.email.toLowerCase()) ||
+            (filter.sessionId && n.sessionId === filter.sessionId))
+      )
+    } else if (filter.sessionId) {
+      list = list.filter(
+        (n) => n.recipientRole === 'client' && n.sessionId === filter.sessionId
+      )
+    }
+  }
+
+  return [...list].sort(
     (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
   )
 }
@@ -497,6 +524,11 @@ export async function createActivityNotification(data: {
   type: ActivityNotification['type']
   title: string
   message: string
+  recipientRole?: 'admin' | 'client'
+  recipientUserId?: string
+  recipientEmail?: string
+  sessionId?: string
+  actionLink?: string
   data?: Record<string, any>
 }): Promise<ActivityNotification> {
   const db = loadDB()
@@ -505,18 +537,106 @@ export async function createActivityNotification(data: {
     type: data.type,
     title: data.title,
     message: data.message,
+    recipientRole: data.recipientRole || 'admin',
+    recipientUserId: data.recipientUserId,
+    recipientEmail: data.recipientEmail?.toLowerCase(),
+    sessionId: data.sessionId,
+    actionLink: data.actionLink,
     data: data.data,
     isRead: false,
     createdAt: new Date().toISOString(),
   }
 
   db.notifications.push(newNotification)
-  // Keep last 200 notifications to prevent unbounded growth
-  if (db.notifications.length > 200) {
-    db.notifications = db.notifications.slice(-200)
+  if (db.notifications.length > 300) {
+    db.notifications = db.notifications.slice(-300)
   }
   saveDB(db)
   return newNotification
+}
+
+export async function markNotificationRead(id: string): Promise<boolean> {
+  const db = loadDB()
+  const item = db.notifications.find((n) => n.id === id)
+  if (!item) return false
+  item.isRead = true
+  saveDB(db)
+  return true
+}
+
+export async function markAllNotificationsRead(filter: {
+  role?: 'admin' | 'client'
+  userId?: string
+  email?: string
+  sessionId?: string
+}): Promise<number> {
+  const db = loadDB()
+  let count = 0
+  for (const n of db.notifications) {
+    if (filter.role === 'admin' && (!n.recipientRole || n.recipientRole === 'admin')) {
+      if (!n.isRead) {
+        n.isRead = true
+        count++
+      }
+    } else if (
+      filter.role === 'client' &&
+      n.recipientRole === 'client' &&
+      ((filter.userId && n.recipientUserId === filter.userId) ||
+        (filter.email &&
+          n.recipientEmail &&
+          n.recipientEmail.toLowerCase() === filter.email.toLowerCase()) ||
+        (filter.sessionId && n.sessionId === filter.sessionId))
+    ) {
+      if (!n.isRead) {
+        n.isRead = true
+        count++
+      }
+    } else if (filter.sessionId && n.recipientRole === 'client' && n.sessionId === filter.sessionId) {
+      if (!n.isRead) {
+        n.isRead = true
+        count++
+      }
+    }
+  }
+  if (count > 0) saveDB(db)
+  return count
+}
+
+export async function appendAdminReplyToChatOrTicket(params: {
+  sessionId?: string
+  ticketId?: string
+  senderName: string
+  replyText: string
+}): Promise<void> {
+  const db = loadDB()
+  if (params.sessionId) {
+    const conv = db.conversations.find((c) => c.sessionId === params.sessionId)
+    if (conv) {
+      conv.messages.push({
+        id: `msg-admin-${Date.now().toString(36)}`,
+        sender: 'assistant',
+        text: `[Message from ${params.senderName}]: ${params.replyText}`,
+        timestamp: new Date().toISOString(),
+      })
+      conv.updatedAt = new Date().toISOString()
+    }
+  }
+  if (params.ticketId) {
+    const ticket = db.tickets.find((t) => t.id === params.ticketId || t.ticketNumber === params.ticketId)
+    if (ticket) {
+      ticket.messages.push({
+        id: `tmsg-admin-${Date.now().toString(36)}`,
+        senderId: 'admin',
+        senderName: params.senderName,
+        isAdmin: true,
+        message: params.replyText,
+        createdAt: new Date().toISOString(),
+      })
+      ticket.status = 'in_progress'
+      ticket.updatedAt = new Date().toISOString()
+    }
+  }
+  saveDB(db)
 }
 
 // ==================== EMAIL TRANSPORT SETTINGS ====================

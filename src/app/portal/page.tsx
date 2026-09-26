@@ -109,6 +109,7 @@ export default function ClientPortalDashboard() {
 
   const [orders, setOrders] = useState<Order[]>([])
   const [tickets, setTickets] = useState<SupportTicket[]>([])
+  const [clientNotifications, setClientNotifications] = useState<any[]>([])
   const [loadingData, setLoadingData] = useState(false)
 
   // New Order Form State
@@ -164,15 +165,19 @@ export default function ClientPortalDashboard() {
   const fetchPortalData = async () => {
     setLoadingData(true)
     try {
-      const [ordersRes, ticketsRes] = await Promise.all([
+      const sessionId = localStorage.getItem('tstack_chat_session_id') || ''
+      const [ordersRes, ticketsRes, notifRes] = await Promise.all([
         fetch('/api/orders'),
         fetch('/api/tickets'),
+        fetch(`/api/notifications?sessionId=${encodeURIComponent(sessionId)}`),
       ])
       const ordersData = await ordersRes.json()
       const ticketsData = await ticketsRes.json()
+      const notifData = await notifRes.json()
 
       if (ordersData.success) setOrders(ordersData.orders || [])
       if (ticketsData.success) setTickets(ticketsData.tickets || [])
+      if (notifData.success) setClientNotifications(notifData.notifications || [])
     } catch (err) {
       console.error('Failed to load portal data:', err)
     } finally {
@@ -418,6 +423,38 @@ export default function ClientPortalDashboard() {
         {/* TAB 1: OVERVIEW & ORDERS */}
         {activeTab === 'overview' && (
           <div className="space-y-6">
+            {/* Direct Architect Messages & Notifications Bar */}
+            {clientNotifications.length > 0 && (
+              <div className="pro-card p-5 border border-blue-500/40 bg-blue-950/15 space-y-3">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-blue-400 animate-ping" />
+                    <h3 className="text-sm font-bold text-white">
+                      Messages &amp; Project Updates from TSTACK Architects ({clientNotifications.length})
+                    </h3>
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  {clientNotifications.slice(0, 5).map((n) => (
+                    <div
+                      key={n.id}
+                      className="p-3.5 rounded-lg bg-slate-950/90 border border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-2"
+                    >
+                      <div className="space-y-0.5">
+                        <div className="text-xs font-semibold text-blue-300">
+                          {n.title}
+                        </div>
+                        <p className="text-xs text-slate-200">{n.message}</p>
+                      </div>
+                      <span className="text-[10px] font-mono text-slate-500 shrink-0">
+                        {new Date(n.createdAt).toLocaleString()}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
             {orders.length === 0 ? (
               <div className="pro-card p-10 text-center space-y-5 border border-slate-800/80">
                 <div className="w-12 h-12 rounded-2xl bg-blue-950/60 border border-blue-500/30 flex items-center justify-center text-blue-400 mx-auto">

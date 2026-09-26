@@ -64,7 +64,18 @@ export async function PATCH(
       ...(assignedArchitect && { assignedArchitect }),
     })
 
-    // If order completed or updated, notify client and owners
+    // If order completed or updated, notify client (via Notification Bar + Email) and owners
+    const { createActivityNotification } = await import('@/lib/db')
+    await createActivityNotification({
+      type: 'order_updated',
+      title: `Order ${order.orderNumber} Updated: ${(status || order.status).toUpperCase()}`,
+      message: `Daniel Kylan Jacob & Team updated your project "${order.serviceName}" to status: ${(status || order.status).replace('_', ' ')}${paymentStatus ? ` (${paymentStatus.toUpperCase()})` : ''}.`,
+      recipientRole: 'client',
+      recipientUserId: order.userId,
+      recipientEmail: order.clientEmail,
+      actionLink: `/portal/orders/${order.id}`,
+    })
+
     if (status && status !== order.status) {
       await sendClientEmail(
         order.clientEmail,
