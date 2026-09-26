@@ -6,12 +6,38 @@ export interface ChatAction {
   value: string
 }
 
+export interface AuthenticatedClientContext {
+  userId: string
+  fullName: string
+  email: string
+  orders: {
+    orderNumber: string
+    serviceName: string
+    price: number
+    status: string
+    paymentStatus: string
+    progressPercent: number
+  }[]
+  tickets: {
+    ticketNumber: string
+    subject: string
+    status: string
+    priority: string
+  }[]
+  invoices: {
+    invoiceNumber: string
+    amount: number
+    status: string
+  }[]
+}
+
 export interface ProcessChatParams {
   sessionId: string
   userMessage: string
   clientName?: string
   clientEmail?: string
-  conversationHistory: { sender: 'user' | 'assistant' | 'system'; text: string }[]
+  conversationHistory: { sender: 'user' | 'assistant' | 'system' | 'owner'; text: string }[]
+  authenticatedClientContext?: AuthenticatedClientContext
 }
 
 export interface ProcessChatResult {
@@ -21,6 +47,12 @@ export interface ProcessChatResult {
   confidence: number
   actions?: ChatAction[]
   followUpPrompts?: string[]
+  extractedLead?: {
+    email?: string
+    serviceInterest?: string
+    budget?: string
+    timeline?: string
+  }
 }
 
 /**
@@ -66,13 +98,131 @@ function searchKnowledge(query: string): { section: KnowledgeSection; score: num
 }
 
 /**
- * Conversational & Grounded AI Engine for TSTACK
+ * Extracts potential lead qualification signals (email, budget, timeline, service) from user message
+ */
+function extractLeadSignals(message: string) {
+  const emailMatch = message.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/)
+  const budgetMatch = message.match(/(\$\s?\d[\d,]*(?:\s?k)?|\d+\s?k\s?(?:usd|budget)?)/i)
+  const timelineMatch = message.match(/(\d+\s*(?:day|week|month)s?|asap|urgent|this month|next month)/i)
+
+  let serviceInterest: string | undefined
+  if (/(agent|chatbot|rag|llm|openai|gpt)/i.test(message)) {
+    serviceInterest = 'Custom AI Agents & RAG Systems'
+  } else if (/(automation|workflow|zapier|make|n8n|crm)/i.test(message)) {
+    serviceInterest = 'AI Workflow Automation'
+  } else if (/(ecommerce|shop|stripe|store)/i.test(message)) {
+    serviceInterest = 'E-Commerce & Payment Platform'
+  } else if (/(website|nextjs|web app|portal|saas|dashboard)/i.test(message)) {
+    serviceInterest = 'Full-Stack Web Application'
+  }
+
+  if (emailMatch || budgetMatch || timelineMatch || serviceInterest) {
+    return {
+      email: emailMatch ? emailMatch[0] : undefined,
+      budget: budgetMatch ? budgetMatch[0] : undefined,
+      timeline: timelineMatch ? timelineMatch[0] : undefined,
+      serviceInterest,
+    }
+  }
+  return undefined
+}
+
+/**
+ * Conversational & Grounded AI Engine 2.0 for TSTACK
  */
 export async function processAIChatMessage(
   params: ProcessChatParams
 ): Promise<ProcessChatResult> {
-  const { userMessage } = params
+  const { userMessage, authenticatedClientContext } = params
   const clean = userMessage.trim().toLowerCase()
+  const extractedLead = extractLeadSignals(userMessage)
+
+  // 0. AUTHENTICATED CLIENT ORDER / TICKET / INVOICE STATUS LOOKUP
+  if (
+    /(my order|order status|my project|my ticket|support ticket|my invoice|track order|where is my order|project progress)/i.test(
+      clean
+    )
+  ) {
+    if (!authenticatedClientContext) {
+      return {
+        reply:
+          "For your security, I only look up order statuses, support tickets, and invoices for **authenticated clients**.\n\nPlease sign in to your **Client Portal (`/portal`)** using your account email and password. Once signed in, you can ask me here or view your live order timeline, project requirements form, file center, and downloadable invoices (`INV-YYYY-XXXX`).",
+        shouldEscalate: false,
+        confidence: 1.0,
+        extractedLead,
+        actions: [
+          { label: 'Sign In to Client Portal', type: 'link', value: '/portal' },
+          { label: 'Message Daniel & Baron', type: 'escalate', value: 'Order Status Inquiry' },
+        ],
+        followUpPrompts: [
+          'How do I submit project requirements?',
+          'How can I contact Daniel & Baron directly?',
+        ],
+      }
+    }
+
+    const { fullName, orders, tickets, invoices } = authenticatedClientContext
+    const orderSummary =
+      orders.length > 0
+        ? orders
+            .slice(0, 4)
+            .map(
+              (o) =>
+                `• **${o.orderNumber}** (${o.serviceName}): Status \`${o.status.toUpperCase()}\` • Payment \`${o.paymentStatus.toUpperCase()}\` • Progress **${o.progressPercent}%** ($${o.price.toLocaleString()})`
+            )
+            .join('\n')
+        : '• You currently have no active orders under your account.'
+
+    const ticketSummary =
+      tickets.length > 0
+        ? tickets
+            .slice(0, 3)
+            .map((t) => `• **${t.ticketNumber}** (${t.subject}): \`${t.status.toUpperCase()}\``)
+            .join('\n')
+        : '• No open support tickets.'
+
+    const invoiceSummary =
+      invoices.length > 0
+        ? invoices
+            .slice(0, 3)
+            .map((inv) => `• **${inv.invoiceNumber}**: $${inv.amount.toLocaleString()} (\`${inv.status.toUpperCase()}\`)`)
+            .join('\n')
+        : '• No issued invoices yet.'
+
+    return {
+      reply: `Hello **${fullName}**! Here is the real-time status of your authenticated TSTACK workspace:\n\n**Your Project Orders:**\n${orderSummary}\n\n**Your Support Tickets:**\n${ticketSummary}\n\n**Your Invoices:**\n${invoiceSummary}\n\nYou can upload files, submit project requirements, or download invoices directly inside your **Client Portal**.`,
+      shouldEscalate: false,
+      confidence: 1.0,
+      extractedLead,
+      actions: [
+        { label: 'Open My Client Portal', type: 'link', value: '/portal' },
+        { label: 'Message Project Architects', type: 'escalate', value: 'Authenticated Client Support' },
+      ],
+      followUpPrompts: [
+        'How do I upload project files?',
+        'Can I schedule a discovery call?',
+      ],
+    }
+  }
+
+  // 0.5 APPOINTMENT / DISCOVERY CALL BOOKING INTENT
+  if (/(book a call|discovery call|schedule a call|schedule meeting|appointment|zoom|google meet|calendar)/i.test(clean)) {
+    return {
+      reply:
+        "You can schedule a **1-on-1 Technical Discovery Call** directly with **Daniel Kylan Jacob** (Founder & Lead Solutions Architect) and **Baron** (Operations Lead)!\n\nIn our Client Portal under the **Discovery Calls** tab, you can pick your preferred date, time slot, timezone, and topic. Once booked, both owners are notified immediately and your meeting link is issued.",
+      shouldEscalate: false,
+      confidence: 0.98,
+      extractedLead,
+      actions: [
+        { label: '📅 Book Discovery Call in Portal', type: 'link', value: '/portal?tab=appointments' },
+        { label: '📩 Leave Email / WhatsApp Instead', type: 'escalate', value: 'Discovery Call Request' },
+      ],
+      followUpPrompts: [
+        'What are your services and prices?',
+        'How does project onboarding work?',
+      ],
+    }
+  }
 
   // 1. GREETINGS & CONVERSATIONAL OPENERS
   if (
@@ -83,17 +233,18 @@ export async function processAIChatMessage(
   ) {
     return {
       reply:
-        "Hello! Welcome to **TSTACK**. I'm your AI Solutions Architect.\n\nI can help you right away with:\n• **Web & Software Engineering** (Next.js platforms, E-Commerce, SaaS portals)\n• **AI Automation & Custom Agents** (CRM pipelines, RAG knowledge bots)\n• **Verified Pricing & Delivery Timelines**\n• **Direct Contact / WhatsApp** with our founder **Daniel Kylan Jacob** and operations lead **Baron**\n\nWhat kind of project or question can I help you with today?",
+        "Hello! Welcome to **TSTACK**. I'm your AI Solutions Architect.\n\nI can help you right away with:\n• **Web & Software Engineering** (Next.js platforms, E-Commerce, SaaS portals)\n• **AI Automation & Custom Agents** (CRM pipelines, RAG knowledge bots)\n• **Verified Pricing, Order Statuses & Discovery Call Booking**\n• **Direct Contact / WhatsApp** with our founder **Daniel Kylan Jacob** and operations lead **Baron**\n\nWhat kind of project or question can I help you with today?",
       shouldEscalate: false,
       confidence: 1.0,
+      extractedLead,
       actions: [
         { label: 'View Services & Pricing', type: 'prompt', value: 'What are your services and prices?' },
+        { label: '📅 Book Discovery Call', type: 'link', value: '/portal?tab=appointments' },
         { label: 'Message Daniel & Baron', type: 'escalate', value: 'Direct Architect Contact' },
-        { label: 'Open Client Portal', type: 'link', value: '/portal' },
       ],
       followUpPrompts: [
         'How much does a custom website or web app cost?',
-        'Tell me about AI workflow automation',
+        'What is my order status?',
         'How can I contact you on WhatsApp or Gmail?',
       ],
     }

@@ -50,6 +50,7 @@ export default function ContactForm() {
 
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
   const [errorMessage, setErrorMessage] = useState('')
+  const [deliveryMessage, setDeliveryMessage] = useState('')
   const [clientErrors, setClientErrors] = useState<Record<string, string>>({})
   const [copiedEmail, setCopiedEmail] = useState<string | null>(null)
   const [gmailComposeUrl, setGmailComposeUrl] = useState('')
@@ -120,11 +121,12 @@ export default function ContactForm() {
 
       if (response.ok && result.success) {
         setStatus('success')
+        setDeliveryMessage(
+          result.message ||
+            'Your request has been recorded. The team will be notified through the available support channel.'
+        )
         if (result.gmailComposeUrl) {
           setGmailComposeUrl(result.gmailComposeUrl)
-          if (!result.externalEmailDelivered) {
-            window.open(result.gmailComposeUrl, '_blank', 'noopener,noreferrer')
-          }
         }
         setFormData({
           fullName: '',
@@ -173,24 +175,14 @@ export default function ContactForm() {
 
           <div className="space-y-1.5">
             <h3 className="text-lg font-semibold text-white">
-              Inquiry Successfully Received
+              Inquiry Successfully Recorded
             </h3>
-            <p className="text-xs sm:text-sm text-slate-400 max-w-md mx-auto leading-relaxed">
-              Thank you. Your message has been logged in the Owner Console and dispatched to <strong>d.jacobwebpro@gmail.com</strong> &amp; <strong>baronwebpro@gmail.com</strong>.
+            <p className="text-xs sm:text-sm text-slate-300 max-w-md mx-auto leading-relaxed font-medium">
+              {deliveryMessage || 'Your request has been recorded. The team will be notified through the available support channel.'}
             </p>
-            {gmailComposeUrl && (
-              <div className="pt-2">
-                <a
-                  href={gmailComposeUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center justify-center gap-1.5 py-2.5 px-4 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold shadow-md transition-colors"
-                >
-                  <span>Send Direct Copy via Gmail Now</span>
-                  <ArrowUpRight className="w-3.5 h-3.5" />
-                </a>
-              </div>
-            )}
+            <p className="text-[11px] text-slate-500 max-w-md mx-auto leading-relaxed">
+              Your project brief is also saved in our CRM pipeline for Daniel Kylan Jacob &amp; Baron.
+            </p>
           </div>
 
           {/* Option to Order Directly via Fiverr with Escrow */}

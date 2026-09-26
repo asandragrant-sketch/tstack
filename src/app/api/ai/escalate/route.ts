@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getConversationBySession, saveConversation } from '@/lib/db'
+import { createAuditLog, getConversationBySession, saveConversation, upsertLead } from '@/lib/db'
 import { notifyOwners } from '@/lib/email'
 
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json()
-    const { sessionId, clientName, clientEmail, reason, extraNote } = body
+    const { sessionId, clientName, clientEmail, reason, extraNote, budget, timeline } = body
 
     if (!sessionId) {
       return NextResponse.json(
@@ -43,12 +43,34 @@ export async function POST(req: NextRequest) {
         reason || 'Client requested direct contact with Daniel Kylan Jacob or Baron',
     })
 
+    // Automatically upsert CRM Lead so the inquiry appears in the Owner CRM Pipeline
+    const lead = await upsertLead({
+      name: clientName || 'AI Chat Visitor',
+      email: clientEmail,
+      serviceInterest: reason || 'Architecture Consultation',
+      budget: budget || undefined,
+      timeline: timeline || undefined,
+      source: 'ai_assistant',
+      status: 'qualified',
+      noteText: extraNote || `Escalated from AI session ${sessionId}`,
+    })
+
+    await createAuditLog({
+      actorId: clientEmail,
+      actorEmail: clientEmail,
+      actorRole: 'client',
+      action: 'ai_chat_escalated',
+      resource: 'conversation',
+      resourceId: sessionId,
+      metadata: { reason: reason || 'Consultation' },
+    })
+
     const transcriptText = existingMessages
       .slice(-6)
       .map((m) => `[${m.sender.toUpperCase()}]: ${m.text}`)
       .join(' | ')
 
-    // Dispatch urgent notification to BOTH owners: d.jacobwebpro@gmail.com and baronwebpro@gmail.com
+    // Dispatch notification to BOTH owners: d.jacobwebpro@gmail.com and baronwebpro@gmail.com
     const notifyResult = await notifyOwners({
       type: 'ai_escalation',
       subject: `[HUMAN ESCALATION] ${clientName || 'Client'} (${clientEmail}) requested direct architect assistance`,
@@ -58,20 +80,26 @@ export async function POST(req: NextRequest) {
       details: {
         'Client Name': clientName || 'Not specified',
         'Client Email': clientEmail,
+        'CRM Lead ID': lead.id,
         'Escalation Reason': reason || 'Client requested direct assistance',
         'Client Note': extraNote || 'No additional note provided',
         'Recent Transcript': transcriptText || 'Direct escalation',
         'Session ID': sessionId,
       },
-      actionLink: `/admin/messages?session=${sessionId}`,
+      actionLink: `/admin?tab=ai&session=${sessionId}`,
       actionLabel: 'Open Conversation in Dashboard →',
     })
 
+    const userFacingMessage = notifyResult.externalEmailDelivered
+      ? 'Your request has been sent to the TSTACK team.'
+      : 'Your request has been recorded. The team will be notified through the available support channel.'
+
     return NextResponse.json({
       success: true,
-      message:
-        'Your inquiry has been logged in the Owner Dashboard and dispatched to Daniel Kylan Jacob (d.jacobwebpro@gmail.com) and Baron (baronwebpro@gmail.com).',
+      message: userFacingMessage,
+      leadId: lead.id,
       externalEmailDelivered: notifyResult.externalEmailDelivered,
+      emailStatus: notifyResult.emailStatus,
       formsubmitNeedsActivation: notifyResult.formsubmitNeedsActivation,
       gmailComposeUrl: notifyResult.gmailComposeUrl,
       mailtoUrl: notifyResult.mailtoUrl,
@@ -85,3 +113,4 @@ export async function POST(req: NextRequest) {
     )
   }
 }
+

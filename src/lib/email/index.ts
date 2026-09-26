@@ -1,5 +1,5 @@
 import nodemailer from 'nodemailer'
-import { createActivityNotification, getEmailSettings } from '../db'
+import { createActivityNotification, createEmailDeliveryLog, getEmailSettings } from '../db'
 import { ActivityEventType } from '../db/types'
 
 export const OWNER_EMAILS = [
@@ -20,6 +20,10 @@ export interface OwnerNotificationPayload {
     | 'ai_escalation'
     | 'support_ticket'
     | 'client_message'
+    | 'appointment_booked'
+    | 'requirements_submitted'
+    | 'file_uploaded'
+    | 'review_submitted'
     | 'system_alert'
   subject: string
   clientName?: string
@@ -34,6 +38,9 @@ export interface NotifyOwnersResult {
   success: boolean
   dispatchedChannels: string[]
   externalEmailDelivered: boolean
+  emailStatus: 'delivered' | 'failed' | 'unconfigured'
+  providerUsed: 'smtp' | 'resend' | 'web3forms' | 'none'
+  errorMessage?: string
   formsubmitNeedsActivation: boolean
   gmailComposeUrl: string
   mailtoUrl: string
@@ -58,6 +65,28 @@ async function getTransporter() {
     })
   }
   return null
+}
+
+/**
+ * Check whether any real server-side email provider is configured
+ */
+export async function getEmailProviderConfigStatus() {
+  const settings = await getEmailSettings()
+  const smtpPass = (process.env.SMTP_PASS || settings.smtpPass || '').trim()
+  const resendKey = (process.env.RESEND_API_KEY || settings.resendApiKey || '').trim()
+  const web3formsKey = (
+    process.env.WEB3FORMS_KEY ||
+    process.env.NEXT_PUBLIC_WEB3FORMS_KEY ||
+    settings.web3formsKey ||
+    ''
+  ).trim()
+
+  return {
+    smtpConfigured: Boolean(smtpPass),
+    resendConfigured: Boolean(resendKey),
+    web3formsConfigured: Boolean(web3formsKey),
+    anyConfigured: Boolean(smtpPass || resendKey || web3formsKey),
+  }
 }
 
 /**
@@ -146,15 +175,17 @@ function buildOwnerAlertHtml(payload: OwnerNotificationPayload): string {
 
 /**
  * Dispatches notification to BOTH owners across all active delivery channels
+ * Logs every delivery attempt into EmailDeliveryLog without faking external delivery
  */
 export async function notifyOwners(payload: OwnerNotificationPayload): Promise<NotifyOwnersResult> {
   const dispatchedChannels: string[] = []
   let externalEmailDelivered = false
-  let formsubmitNeedsActivation = false
+  let providerUsed: 'smtp' | 'resend' | 'web3forms' | 'none' = 'none'
+  let lastErrorMessage: string | undefined
 
   const settings = await getEmailSettings()
+  const configStatus = await getEmailProviderConfigStatus()
 
-  // Build plain-text body for direct Gmail compose / FormSubmit fallback
   const plainTextLines = [
     `TSTACK PLATFORM ALERT: ${payload.subject}`,
     `--------------------------------------------------`,
@@ -187,17 +218,10 @@ export async function notifyOwners(payload: OwnerNotificationPayload): Promise<N
     console.error('[Notify] Failed to record in activity feed:', err)
   }
 
-  // 2. Server-side structured audit logging
-  console.log('====================================================')
-  console.log(`[TSTACK OWNER NOTIFICATION] >>> ${payload.subject}`)
-  console.log(`Recipients: ${OWNER_EMAILS.join(', ')}`)
-  console.log('Details:', JSON.stringify(payload.details, null, 2))
-  console.log('====================================================')
   dispatchedChannels.push('system_audit_log')
-
   const htmlContent = buildOwnerAlertHtml(payload)
 
-  // 3. Direct SMTP Delivery (Gmail App Password or Custom SMTP)
+  // 2. Direct SMTP Delivery (Gmail App Password or Custom SMTP)
   const transporter = await getTransporter()
   if (transporter) {
     try {
@@ -212,12 +236,14 @@ export async function notifyOwners(payload: OwnerNotificationPayload): Promise<N
       })
       dispatchedChannels.push('smtp_email')
       externalEmailDelivered = true
-    } catch (err) {
-      console.error('[Notify] SMTP dispatch failed:', err)
+      providerUsed = 'smtp'
+    } catch (err: any) {
+      lastErrorMessage = err?.message || 'SMTP delivery failed'
+      console.error('[Notify] SMTP dispatch failed:', lastErrorMessage)
     }
   }
 
-  // 4. Resend API if configured
+  // 3. Resend API if configured
   const resendKey = (process.env.RESEND_API_KEY || settings.resendApiKey || '').trim()
   if (resendKey && !externalEmailDelivered) {
     try {
@@ -238,13 +264,18 @@ export async function notifyOwners(payload: OwnerNotificationPayload): Promise<N
       if (res.ok) {
         dispatchedChannels.push('resend_api')
         externalEmailDelivered = true
+        providerUsed = 'resend'
+      } else {
+        const errBody = await res.text().catch(() => '')
+        lastErrorMessage = `Resend HTTP ${res.status}: ${errBody.slice(0, 140)}`
       }
-    } catch (err) {
-      console.error('[Notify] Resend API dispatch failed:', err)
+    } catch (err: any) {
+      lastErrorMessage = err?.message || 'Resend dispatch error'
+      console.error('[Notify] Resend API dispatch failed:', lastErrorMessage)
     }
   }
 
-  // 5. Web3Forms webhook if configured
+  // 4. Web3Forms webhook if configured
   const web3formsKey = (
     process.env.WEB3FORMS_KEY ||
     process.env.NEXT_PUBLIC_WEB3FORMS_KEY ||
@@ -268,77 +299,69 @@ export async function notifyOwners(payload: OwnerNotificationPayload): Promise<N
       if (res.ok) {
         dispatchedChannels.push('web3forms_webhook')
         externalEmailDelivered = true
+        providerUsed = 'web3forms'
+      } else {
+        lastErrorMessage = `Web3Forms HTTP ${res.status}`
       }
-    } catch (err) {
-      console.error('[Notify] Web3Forms dispatch failed:', err)
+    } catch (err: any) {
+      lastErrorMessage = err?.message || 'Web3Forms dispatch error'
+      console.error('[Notify] Web3Forms dispatch failed:', lastErrorMessage)
     }
   }
 
-  // 6. FormSubmit.co Direct Gmail Relay to BOTH d.jacobwebpro@gmail.com and baronwebpro@gmail.com
-  if (!externalEmailDelivered) {
-    for (const ownerEmail of OWNER_EMAILS) {
-      try {
-        const fsRes = await fetch(`https://formsubmit.co/ajax/${ownerEmail}`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Accept: 'application/json',
-            Origin: APP_URL,
-            Referer: `${APP_URL}/contact`,
-          },
-          body: JSON.stringify({
-            name: payload.clientName || 'TSTACK Platform Visitor',
-            email: payload.clientEmail || 'notifications@tstackweb.com',
-            _replyto: payload.clientEmail || ownerEmail,
-            _subject: `[TSTACK] ${payload.subject}`,
-            _template: 'table',
-            ...payload.details,
-            Timestamp: new Date().toUTCString(),
-          }),
-        })
+  const emailStatus: 'delivered' | 'failed' | 'unconfigured' = externalEmailDelivered
+    ? 'delivered'
+    : configStatus.anyConfigured
+    ? 'failed'
+    : 'unconfigured'
 
-        const fsData = await fsRes.json().catch(() => ({}))
-        if (fsData.success === 'true' || fsData.success === true) {
-          externalEmailDelivered = true
-          if (!dispatchedChannels.includes('formsubmit_gmail_relay')) {
-            dispatchedChannels.push('formsubmit_gmail_relay')
-          }
-        } else if (
-          typeof fsData.message === 'string' &&
-          fsData.message.toLowerCase().includes('activation')
-        ) {
-          formsubmitNeedsActivation = true
-        }
-      } catch (err) {
-        console.error(`[Notify] FormSubmit relay error for ${ownerEmail}:`, err)
-      }
-    }
+  try {
+    await createEmailDeliveryLog({
+      eventType: payload.type,
+      recipient: OWNER_EMAILS.join(', '),
+      subject: `[TSTACK] ${payload.subject}`,
+      provider: providerUsed,
+      status: emailStatus,
+      errorMessage:
+        emailStatus === 'unconfigured'
+          ? 'No external SMTP, Resend, or Web3Forms API credentials configured. Recorded in Admin Activity Feed.'
+          : lastErrorMessage,
+    })
+  } catch (err) {
+    console.error('[Notify] Failed to write EmailDeliveryLog:', err)
   }
 
   return {
     success: true,
     dispatchedChannels,
     externalEmailDelivered,
-    formsubmitNeedsActivation,
+    emailStatus,
+    providerUsed,
+    errorMessage: lastErrorMessage,
+    formsubmitNeedsActivation: !externalEmailDelivered,
     gmailComposeUrl,
     mailtoUrl,
   }
 }
 
 /**
- * Sends transactional email to client (e.g. registration, order confirmation)
+ * Sends transactional email to client (e.g. registration, order confirmation, invoice)
+ * Reports truthful boolean status and records in EmailDeliveryLog
  */
 export async function sendClientEmail(
   recipientEmail: string,
   subject: string,
   htmlBody: string
 ): Promise<boolean> {
-  console.log(`[TSTACK CLIENT EMAIL] >>> To: ${recipientEmail} | Subject: ${subject}`)
+  const settings = await getEmailSettings()
+  const configStatus = await getEmailProviderConfigStatus()
+  let delivered = false
+  let providerUsed: 'smtp' | 'resend' | 'none' = 'none'
+  let lastError: string | undefined
 
   const transporter = await getTransporter()
   if (transporter) {
     try {
-      const settings = await getEmailSettings()
       const fromUser = process.env.SMTP_USER || settings.smtpUser || DEFAULT_SENDER_EMAIL
       await transporter.sendMail({
         from: `"TSTACK Engineering" <${fromUser}>`,
@@ -346,15 +369,15 @@ export async function sendClientEmail(
         subject,
         html: htmlBody,
       })
-      return true
-    } catch (err) {
-      console.error('[ClientEmail] SMTP failed:', err)
+      delivered = true
+      providerUsed = 'smtp'
+    } catch (err: any) {
+      lastError = err?.message || 'Client SMTP failed'
     }
   }
 
-  const settings = await getEmailSettings()
   const resendKey = (process.env.RESEND_API_KEY || settings.resendApiKey || '').trim()
-  if (resendKey) {
+  if (!delivered && resendKey) {
     try {
       const res = await fetch('https://api.resend.com/emails', {
         method: 'POST',
@@ -369,11 +392,32 @@ export async function sendClientEmail(
           html: htmlBody,
         }),
       })
-      return res.ok
-    } catch (err) {
-      console.error('[ClientEmail] Resend failed:', err)
+      if (res.ok) {
+        delivered = true
+        providerUsed = 'resend'
+      } else {
+        lastError = `Resend HTTP ${res.status}`
+      }
+    } catch (err: any) {
+      lastError = err?.message || 'Client Resend failed'
     }
   }
 
-  return true
+  try {
+    await createEmailDeliveryLog({
+      eventType: 'client_transactional_email',
+      recipient: recipientEmail,
+      subject,
+      provider: providerUsed,
+      status: delivered ? 'delivered' : configStatus.anyConfigured ? 'failed' : 'unconfigured',
+      errorMessage: delivered
+        ? undefined
+        : lastError || 'No external email provider configured for transactional email.',
+    })
+  } catch {
+    // ignore
+  }
+
+  return delivered
 }
+

@@ -1,10 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import Stripe from 'stripe'
 import { getCurrentUser } from '@/lib/auth'
-import { getOrderById, createPayment, updateOrder } from '@/lib/db'
-import { notifyOwners } from '@/lib/email'
-
-const stripeSecretKey = process.env.STRIPE_SECRET_KEY
+import { getOrderById } from '@/lib/db'
 
 export async function POST(req: NextRequest) {
   try {
@@ -34,6 +31,13 @@ export async function POST(req: NextRequest) {
       )
     }
 
+    if (user.role !== 'admin' && order.userId !== user.id) {
+      return NextResponse.json(
+        { success: false, error: 'Forbidden: You do not own this order.' },
+        { status: 403 }
+      )
+    }
+
     if (order.paymentStatus === 'paid') {
       return NextResponse.json(
         { success: false, error: 'This order is already marked as paid.' },
@@ -41,49 +45,49 @@ export async function POST(req: NextRequest) {
       )
     }
 
+    const stripeSecretKey = (process.env.STRIPE_SECRET_KEY || '').trim()
     const amountInCents = Math.round(order.price * 100)
 
-    // If Stripe API key is provided, create real Stripe PaymentIntent
-    if (stripeSecretKey) {
-      const stripe = new Stripe(stripeSecretKey, {
-        apiVersion: '2023-10-16' as any,
-      })
-
-      const paymentIntent = await stripe.paymentIntents.create({
-        amount: amountInCents,
-        currency: (order.currency || 'USD').toLowerCase(),
-        metadata: {
-          orderId: order.id,
-          orderNumber: order.orderNumber,
-          userId: user.id,
-          clientEmail: user.email,
+    if (!stripeSecretKey) {
+      return NextResponse.json(
+        {
+          success: false,
+          stripeConfigured: false,
+          mode: 'stripe_unconfigured',
+          error:
+            'Direct Stripe card checkout is currently unavailable because STRIPE_SECRET_KEY is not configured in the server environment. You can fund this order via Verified Fiverr Milestone Escrow or submit your Fiverr/Wire transaction reference for Owner Verification.',
+          fiverrEscrowUrl: 'https://www.fiverr.com/s/bkdlzbX',
         },
-        receipt_email: user.email,
-        description: `TSTACK Payment for ${order.serviceName} (${order.orderNumber})`,
-      })
-
-      return NextResponse.json({
-        success: true,
-        clientSecret: paymentIntent.client_secret,
-        paymentIntentId: paymentIntent.id,
-        amount: order.price,
-        currency: order.currency,
-        mode: 'stripe_live',
-      })
-    } else {
-      // In development or when Stripe key is pending, provide transparent simulated intent
-      const mockTxRef = `tx_mock_${Date.now().toString(36)}_${Math.random().toString(36).substring(2, 7)}`
-      
-      return NextResponse.json({
-        success: true,
-        clientSecret: `mock_secret_${mockTxRef}`,
-        paymentIntentId: mockTxRef,
-        amount: order.price,
-        currency: order.currency,
-        mode: 'stripe_sandbox_demo',
-        notice: 'STRIPE_SECRET_KEY is not yet set in environment. Running in verified sandbox mode.',
-      })
+        { status: 503 }
+      )
     }
+
+    const stripe = new Stripe(stripeSecretKey, {
+      apiVersion: '2023-10-16' as any,
+    })
+
+    const paymentIntent = await stripe.paymentIntents.create({
+      amount: amountInCents,
+      currency: (order.currency || 'USD').toLowerCase(),
+      metadata: {
+        orderId: order.id,
+        orderNumber: order.orderNumber,
+        userId: user.id,
+        clientEmail: user.email,
+      },
+      receipt_email: user.email,
+      description: `TSTACK Payment for ${order.serviceName} (${order.orderNumber})`,
+    })
+
+    return NextResponse.json({
+      success: true,
+      stripeConfigured: true,
+      clientSecret: paymentIntent.client_secret,
+      paymentIntentId: paymentIntent.id,
+      amount: order.price,
+      currency: order.currency,
+      mode: 'stripe_live',
+    })
   } catch (err: any) {
     console.error('[Create Payment Intent API] Error:', err)
     return NextResponse.json(
@@ -92,3 +96,4 @@ export async function POST(req: NextRequest) {
     )
   }
 }
+

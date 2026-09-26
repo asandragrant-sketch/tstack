@@ -269,17 +269,19 @@ export default function AIChatWidget() {
         setMailtoUrl(data.mailtoUrl || '')
         setExternalDelivered(Boolean(data.externalEmailDelivered))
 
+        const confirmationText =
+          data.message ||
+          (data.externalEmailDelivered
+            ? 'Your request has been sent to the TSTACK team.'
+            : 'Your request has been recorded. The team will be notified through the available support channel.')
+
         setMessages((prev) => [
           ...prev,
           {
             sender: 'system',
-            text: `✓ Sent to Owner Notification Bar (/admin) & Dispatched to Daniel Kylan Jacob (d.jacobwebpro@gmail.com) and Baron (baronwebpro@gmail.com).`,
+            text: `✓ ${confirmationText}`,
           },
         ])
-
-        if (!data.externalEmailDelivered && data.gmailComposeUrl) {
-          window.open(data.gmailComposeUrl, '_blank', 'noopener,noreferrer')
-        }
       } else {
         setEscalationStatus('error')
         setEscalationError(data.error || 'Failed to send.')
@@ -371,15 +373,17 @@ export default function AIChatWidget() {
                     <div className="flex items-center gap-2 text-emerald-400">
                       <CheckCircle2 className="w-5 h-5 shrink-0" />
                       <h4 className="text-sm font-semibold text-white">
-                        Sent to Owner Alert Bar &amp; Gmail!
+                        {externalDelivered ? 'Sent to the TSTACK Team' : 'Request Recorded'}
                       </h4>
                     </div>
 
                     <p className="text-xs text-slate-300 leading-relaxed">
-                      Your contact info and message are now flashing in the{' '}
-                      <strong className="text-white">Owner Notification Bar (/admin)</strong> and routed to{' '}
-                      <strong className="text-white">d.jacobwebpro@gmail.com</strong> &amp;{' '}
-                      <strong className="text-white">baronwebpro@gmail.com</strong>.
+                      {externalDelivered
+                        ? 'Your request has been sent to the TSTACK team.'
+                        : 'Your request has been recorded. The team will be notified through the available support channel.'}
+                    </p>
+                    <p className="text-[11px] text-slate-400 leading-relaxed">
+                      Logged in the <strong className="text-white">Owner Notification Bar (/admin)</strong> and CRM pipeline for Daniel Kylan Jacob &amp; Baron. When an owner replies, it appears live inside this chat window.
                     </p>
 
                     <div className="space-y-2 pt-1">

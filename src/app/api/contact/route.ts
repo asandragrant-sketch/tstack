@@ -98,15 +98,19 @@ export async function POST(request: NextRequest) {
       actionLabel: 'View in Admin Dashboard →',
     })
 
+    const deliveryMessage = notifyResult.externalEmailDelivered
+      ? 'Your request has been sent to the TSTACK team.'
+      : 'Your request has been recorded. The team will be notified through the available support channel.'
+
     return NextResponse.json(
       {
         success: true,
         inquiryId: newInquiry.id,
         externalEmailDelivered: notifyResult.externalEmailDelivered,
+        emailStatus: notifyResult.emailStatus,
         gmailComposeUrl: notifyResult.gmailComposeUrl,
         mailtoUrl: notifyResult.mailtoUrl,
-        message:
-          'Thank you. Your project brief has been securely processed and dispatched to our lead solutions architects.',
+        message: deliveryMessage,
         data: {
           inquiryId: newInquiry.id,
           fiverrUrl: FIVERR_URL,
